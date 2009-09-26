@@ -17,6 +17,10 @@ function protea:Environment(name, value)
 	return self.environment[name]
 end
 
+function protea:EnvironmentReset()
+	self.environment = {}
+end
+
 
 
 -- === === === === === === === === === === === === === === === === === === ====

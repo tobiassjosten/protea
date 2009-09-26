@@ -14,12 +14,12 @@ require 'core.init'
 module('protea.core', lunit.testcase, package.seeall)
 
 function SetUp()
-	protea.environment = {}
+	protea:EnvironmentReset()
 	test_core_variable = nil
 end
 
 function TearDown()
-	protea.environment = {}
+	protea:EnvironmentReset()
 	test_core_variable = nil
 end
 

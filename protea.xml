@@ -56,6 +56,10 @@ function OnPluginConnect()
 	protea:Environment('realm', host2realm[GetInfo(1)] or GetInfo(1))
 end -- OnPluginConnect()
 
+function OnPluginDisconnect()
+	protea:EnvironmentReset()
+end -- OnPluginDisconnect()
+
 ]]></script>
 
 
