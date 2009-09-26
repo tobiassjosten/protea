@@ -24,7 +24,7 @@
 
 
 <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-<!-- PROTEA INTERFACE																											  -->
+<!-- PROTEA INTERFACE                                                       -->
 <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 
 <script><![CDATA[
@@ -46,10 +46,10 @@ protea = require 'core.init'
 
 host2realm =
 {
-  ['achaea.com'] = 'achaea',
-  ['aetolia.com'] = 'aetolia',
-  ['imperian.com'] = 'imperian',
-  ['lusternia.com'] = 'lusternia',
+	['achaea.com'] = 'achaea',
+	['aetolia.com'] = 'aetolia',
+	['imperian.com'] = 'imperian',
+	['lusternia.com'] = 'lusternia',
 }
 
 function OnPluginConnect()
