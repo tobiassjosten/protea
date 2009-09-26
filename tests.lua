@@ -56,3 +56,10 @@ function TestEventPassParameters()
 	event:Raise('test', { property = true })
 	assert_true(test_event_variable, 'Event did not pass its parameters.')
 end
+
+function TestEventParameterFilters()
+	event:Listen('test', function() test_event_variable = true end, { property = true })
+	event:Listen('test', function() test_event_variable = false end, { property = false })
+	event:Raise('test', { property = true })
+	assert_true(test_event_variable, 'Event was run despite its parameter filter.')
+end
