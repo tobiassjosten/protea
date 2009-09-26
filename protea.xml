@@ -29,10 +29,32 @@
 
 <script><![CDATA[
 
+-- === === === === === === === === === === === === === === === === === === ====
+-- LOAD MODULES
+-- === === === === === === === === === === === === === === === === === === ====
+
 PROTEA_PATH = GetPluginInfo(GetPluginID(), 6):gsub('protea.xml', '')
 package.path = package.path .. ';' .. PROTEA_PATH .. '?.lua'
 
 protea = require 'core.init'
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- MUSHCLIENT PLUGIN CALLBACKS
+-- === === === === === === === === === === === === === === === === === === ====
+
+host2realm =
+{
+  ['achaea.com'] = 'achaea',
+  ['aetolia.com'] = 'aetolia',
+  ['imperian.com'] = 'imperian',
+  ['lusternia.com'] = 'lusternia',
+}
+
+function OnPluginConnect()
+	protea:Environment('realm', host2realm[GetInfo(1)] or GetInfo(1))
+end -- OnPluginConnect()
 
 ]]></script>
 
