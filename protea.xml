@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE muclient>
+<muclient>
+
+
+
+<!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- MUSHCLIENT METADATA                                                    -->
+<!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<plugin
+	name="Protea"
+	author="Tobias Sjösten"
+	id="31fd8b9ee4f0937c4b584303"
+	language="Lua"
+	purpose="Viagra for your e-peen"
+	save_state="y"
+	date_written="2009-09-26 14:06:14"
+	version="1.0"
+>
+	<description trim="y">Protea is a gaming enhancement system tailored for Iron Realms Entertainment MUDs.</description>
+</plugin>
+
+
+
+<!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+<!-- PROTEA INTERFACE																											  -->
+<!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+<script><![CDATA[
+
+protea = require 'core.init'
+
+]]></script>
+
+
+
+</muclient>
