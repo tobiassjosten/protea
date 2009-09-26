@@ -21,13 +21,13 @@ listeners = {}
 
 --- Raise an event.
 -- 
-function Raise(self, name)
+function Raise(self, name, parameters)
 	if not self.listeners[name] then
 		return
 	end
 
 	for _, listener in ipairs(self.listeners[name]) do
-		listener.callback()
+		listener.callback(parameters)
 	end
 end -- Raise()
 
