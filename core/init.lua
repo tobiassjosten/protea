@@ -97,4 +97,6 @@ event:Listen('environment', function(parameters) protea:ModuleLoad(nil, paramete
 
 
 
+protea:ModuleLoad('load')
+
 return protea
