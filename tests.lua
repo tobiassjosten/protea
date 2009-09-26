@@ -13,8 +13,30 @@ require 'core.init'
 
 module('protea.core', lunit.testcase, package.seeall)
 
+function SetUp()
+	protea.environment = {}
+	test_core_variable = nil
+end
+
+function TearDown()
+	protea.environment = {}
+	test_core_variable = nil
+end
+
 function TestModulesExistance()
 	assert_table(event, 'Missing Event module.')
+end
+
+function TestEnvironmentSetGet()
+	assert_nil(protea:Environment('test_environment'))
+	local realm = protea:Environment('test_environment', 'test')
+	assert_equal('test', realm, 'Setting realm environment did not return the value.')
+	assert_equal('test', protea:Environment('test_environment'), 'Realm environment was not set.')
+end
+
+function TestEnvironmentRealmLoading()
+	protea:Environment('realm', 'test')
+	assert_true(test_core_variable, 'Init module in test realm package was not loaded.')
 end
 
 
