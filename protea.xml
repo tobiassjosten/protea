@@ -29,7 +29,10 @@
 
 <script><![CDATA[
 
-protea = require 'core.init'
+PROTEA_PATH = GetPluginInfo(GetPluginID(), 6):gsub('protea.xml', '')
+package.path = package.path .. ';' .. PROTEA_PATH .. '?.lua'
+
+require 'core.init'
 
 ]]></script>
 
