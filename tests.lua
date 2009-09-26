@@ -15,16 +15,31 @@ module('protea.core', lunit.testcase, package.seeall)
 
 function SetUp()
 	protea:EnvironmentReset()
+	modules_queue = protea.modules_queue
 	test_core_variable = nil
 end
 
 function TearDown()
 	protea:EnvironmentReset()
+	protea.modules_queue = modules_queue
 	test_core_variable = nil
 end
 
 function TestModulesExistance()
 	assert_table(event, 'Missing Event module.')
+end
+
+function TestModulesLoading()
+	protea:ModuleLoad('test')
+	assert_not_nil(test, 'Test module could not be loaded.')
+	assert_not_nil(test.test_core_variable, 'Test module is missing the test_core_variable property.')
+end
+
+function TestModulesResetting()
+	protea:ModuleLoad('test')
+	protea:ModuleLoad('test', 'test')
+	protea:ModuleReset()
+	assert_true(test.test_core_variable, 'Property of test module was not reset.')
 end
 
 function TestEnvironmentSetGet()
