@@ -32,7 +32,7 @@
 PROTEA_PATH = GetPluginInfo(GetPluginID(), 6):gsub('protea.xml', '')
 package.path = package.path .. ';' .. PROTEA_PATH .. '?.lua'
 
-require 'core.init'
+protea = require 'core.init'
 
 ]]></script>
 
