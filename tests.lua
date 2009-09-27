@@ -63,12 +63,12 @@ end
 module('protea.core.event', lunit.testcase, package.seeall)
 
 function SetUp()
-	event.listeners = {}
+	listeners = event.listeners
 	test_event_variable = nil
 end
 
 function TearDown()
-	event.listeners = {}
+	event.listeners = listeners
 	test_event_variable = nil
 end
 
