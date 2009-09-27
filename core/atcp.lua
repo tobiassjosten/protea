@@ -2,8 +2,21 @@
 -- ATCP MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
+local bit =
+{
+	bor = bit.bor,
+}
 local ipairs = ipairs
+local math =
+{
+	fmod = math.fmod,
+}
 local protea = protea
+local string =
+{
+	byte = string.byte,
+	gmatch = string.gmatch,
+}
 local table =
 {
 	insert = table.insert,
@@ -70,3 +83,23 @@ function Initialize(self)
 
 	return self.IAC_DO_ATCP .. self.IAC_SB_ATCP .. options .. self.IAC_SE
 end -- Initialize()
+
+--- ATCP authentication.
+-- 
+function Auth(self, seed)
+	local answer, i, n = 17, 0
+
+	for letter in string.gmatch(seed, '.') do
+		n = letter:byte() - 96
+
+		if math.fmod(i, 2) == 0 then
+			answer = answer + n * (bit.bor(i, 13))
+		else
+			answer = answer - n * (bit.bor(i, 11))
+		end
+
+		i = i + 1
+	end
+
+	return answer
+end -- Auth()

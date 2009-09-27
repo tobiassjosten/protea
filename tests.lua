@@ -3,6 +3,7 @@
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
+require 'bit'
 require 'core.init'
 
 
@@ -112,4 +113,8 @@ module('protea.core.atcp', lunit.testcase, package.seeall)
 
 function TestATCPInitialization()
 	assert_match('^\255\253\200\255\250\200.+\255\240$', atcp:Initialize(), 'Invalid initialization string.')
+end
+
+function TestATCPAuthenticate()
+	assert_equal(1083, atcp:Auth('ygvhnqpakyzubgiejmrc'), 'Authentication challenge did not validate.')
 end
