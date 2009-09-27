@@ -12,6 +12,7 @@ local math =
 {
 	fmod = math.fmod,
 }
+local pairs = pairs
 local protea = protea
 local SendPkt = SendPkt
 local string =
@@ -63,13 +64,14 @@ options =
 	{ key = 'auth', value = '1' },
 	{ key = 'composer', value = '0' },
 	{ key = 'keepalive', value = '1' },
+	{ key = 'ping', value = '1' },
 	{ key = 'char_name', value = '1' },
-	{ key = 'filestore', value = '0' },
-	{ key = 'topvote', value = '0' },
 	{ key = 'char_vitals', value = '1' },
 	{ key = 'room_brief', value = '1' },
 	{ key = 'room_exits', value = '1' },
 	{ key = 'map_display', value = '1' },
+	{ key = 'filestore', value = '0' },
+	{ key = 'topvote', value = '0' },
 	{ key = 'mediapak', value = '0' },
 	{ key = 'wiz', value = '0' },
 }
@@ -128,7 +130,7 @@ function Parse(self, packet)
 	local packet, values = self:Extract(packet)
 
 	for key, value in pairs(values) do
-		event:Raise('atcp', { name = k, value = value })
+		event:Raise('atcp', { name = key, value = value })
 	end
 
 	if (values['Auth.Request']) then

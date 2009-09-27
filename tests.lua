@@ -157,6 +157,12 @@ function TestATCPExtract()
 	assert_equal('test_value', test_atcp_variable['test_key'], 'Test key/value was not extracted from ATCP buffer sequence.')
 end
 
+function TestATCPParseRaiseEvent()
+	event:Listen('atcp', function() test_atcp_variable = true end, { name = 'test_key', value = 'test_value' })
+	atcp:Parse('\255\250\200test_key test_value\255\240')
+	assert_true(test_atcp_variable, 'No event was raised for ATCP data.')
+end
+
 function TestATCPParseAuthChallenge()
 	atcp:Parse('\255\250\200Auth.Request CH ygvhnqpakyzubgiejmrc\255\240')
 	assert_match('^\255\250\200auth 1083 Protea .+\255\240$', test_sendpkt_variable, 'Authentication challenge was not met.')
