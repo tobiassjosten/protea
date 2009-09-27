@@ -6,7 +6,7 @@ require 'lunit'
 require 'bit'
 
 -- Adapter functions
-SendPkt = function(package) test_sendpkt_variable = package end
+SendPkt = function(packet) test_sendpkt_variable = packet end
 
 require 'core.init'
 
