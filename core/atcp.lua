@@ -6,6 +6,7 @@ local bit =
 {
 	bor = bit.bor,
 }
+local event = event
 local ipairs = ipairs
 local math =
 {
@@ -16,7 +17,9 @@ local SendPkt = SendPkt
 local string =
 {
 	byte = string.byte,
+	find = string.find,
 	gmatch = string.gmatch,
+	gsub = string.gsub,
 }
 local table =
 {
@@ -104,3 +107,19 @@ function Auth(self, seed)
 
 	return answer
 end -- Auth()
+
+--- Handle ATCP in incoming packages.
+-- 
+function Parse(self, packet)
+	if (string.find(packet, self.IAC_WILL_ATCP)) then
+		event:Raise('atcp', { name = 'status', value = true })
+		packet = string.gsub(packet, self.IAC_WILL_ATCP, '')
+	end
+
+	if (string.find(packet, self.IAC_WONT_ATCP)) then
+		event:Raise('atcp', { name = 'status', value = false })
+		packet = string.gsub(packet, self.IAC_WONT_ATCP, '')
+	end
+
+	return packet
+end -- Parse()

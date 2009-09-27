@@ -115,11 +115,35 @@ end
 
 module('protea.core.atcp', lunit.testcase, package.seeall)
 
+function SetUp()
+	listeners = event.listeners
+	test_atcp_variable = nil
+end
+
+function TearDown()
+	event.listeners = listeners
+	test_atcp_variable = nil
+end
+
 function TestATCPInitialization()
 	atcp:Initialize()
 	assert_match('^\255\253\200\255\250\200.+\255\240$', test_sendpkt_variable, 'Invalid initialization string.')
 end
 
-function TestATCPAuthenticate()
+function TestATCPAuthentication()
 	assert_equal(1083, atcp:Auth('ygvhnqpakyzubgiejmrc'), 'Authentication challenge did not validate.')
+end
+
+function TestATCPParseNegotiationWillATCP()
+	event:Listen('atcp', function() test_atcp_variable = true end, { name = 'status', value = true })
+	local test_atcp_variable_packet = atcp:Parse('\255\251\200')
+	assert_equal('', test_atcp_variable_packet, 'ATCP parser did not strip the IAC WILL ATCP sequence.')
+	assert_true(test_atcp_variable, 'ATCP parser did not raise the ATCP event for status = true.')
+end
+
+function TestATCPParseNegotiationWontATCP()
+	event:Listen('atcp', function() test_atcp_variable = true end, { name = 'status', value = false })
+	local test_atcp_variable_packet = atcp:Parse('\255\252\200')
+	assert_equal('', test_atcp_variable_packet, 'ATCP parser did not strip the IAC WONT ATCP sequence.')
+	assert_true(test_atcp_variable, 'ATCP parser did not raise the ATCP event for status = false.')
 end
