@@ -34,7 +34,7 @@ function Raise(self, name, parameters)
 	for _, listener in ipairs(self.listeners[name]) do
 		passed_filter = true
 		for key, value in pairs(listener.filter) do
-			if not parameters[key] or parameters[key] ~= value then
+			if parameters[key] == nil or parameters[key] ~= value then
 				passed_filter = false
 			end
 		end
