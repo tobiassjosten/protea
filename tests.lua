@@ -27,6 +27,7 @@ end
 
 function TestModulesExistance()
 	assert_table(event, 'Missing Event module.')
+	assert_table(atcp, 'Missing ATCP module.')
 end
 
 function TestModulesLoading()
@@ -99,4 +100,16 @@ function TestEventParameterFilters()
 	event:Listen('test', function() test_event_variable = false end, { property = false })
 	event:Raise('test', { property = true })
 	assert_true(test_event_variable, 'Event was run despite its parameter filter.')
+end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- ATCP MODULE
+-- === === === === === === === === === === === === === === === === === === ====
+
+module('protea.core.atcp', lunit.testcase, package.seeall)
+
+function TestATCPInitialization()
+	assert_match('^\255\253\200\255\250\200.+\255\240$', atcp:Initialize(), 'Invalid initialization string.')
 end

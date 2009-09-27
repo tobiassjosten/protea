@@ -4,6 +4,7 @@
 
 protea =
 {
+	version = '0.1-alpha',
 	environment = {},
 	modules = {},
   modules_queue = {},
@@ -91,6 +92,7 @@ function protea:ModuleReset()
 end
 
 protea:ModuleLoad('event')
+protea:ModuleLoad('atcp')
 
 -- Load realm specific modules when realm is detected
 event:Listen('environment', function(parameters) protea:ModuleLoad(nil, parameters['value']) end, { name = 'realm' })
