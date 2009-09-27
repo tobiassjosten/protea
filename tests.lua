@@ -4,6 +4,10 @@
 
 require 'lunit'
 require 'bit'
+
+-- Adapter functions
+SendPkt = function(package) test_sendpkt_variable = package end
+
 require 'core.init'
 
 
@@ -112,7 +116,8 @@ end
 module('protea.core.atcp', lunit.testcase, package.seeall)
 
 function TestATCPInitialization()
-	assert_match('^\255\253\200\255\250\200.+\255\240$', atcp:Initialize(), 'Invalid initialization string.')
+	atcp:Initialize()
+	assert_match('^\255\253\200\255\250\200.+\255\240$', test_sendpkt_variable, 'Invalid initialization string.')
 end
 
 function TestATCPAuthenticate()

@@ -55,7 +55,7 @@ host2realm =
 function OnPluginConnect()
 	local realm = host2realm[GetInfo(1)]
 	if realm then
-		SendPkt(atcp:Initialize())
+		atcp:Initialize()
 		protea:Environment('realm', realm)
 	end
 end -- OnPluginConnect()

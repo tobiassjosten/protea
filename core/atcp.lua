@@ -12,6 +12,7 @@ local math =
 	fmod = math.fmod,
 }
 local protea = protea
+local SendPkt = SendPkt
 local string =
 {
 	byte = string.byte,
@@ -81,7 +82,7 @@ function Initialize(self)
 	end
 	options = table.concat(options, '\10')
 
-	return self.IAC_DO_ATCP .. self.IAC_SB_ATCP .. options .. self.IAC_SE
+	SendPkt(self.IAC_DO_ATCP .. self.IAC_SB_ATCP .. options .. self.IAC_SE)
 end -- Initialize()
 
 --- ATCP authentication.
