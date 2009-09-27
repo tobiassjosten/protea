@@ -127,6 +127,10 @@ function Parse(self, packet)
 
 	local packet, values = self:Extract(packet)
 
+	for key, value in pairs(values) do
+		event:Raise('atcp', { name = k, value = value })
+	end
+
 	if (values['Auth.Request']) then
 		local auth = self:Auth(string.sub(values['Auth.Request'], 4))
 		SendPkt(self.IAC_SB_ATCP .. 'auth ' .. tostring(auth) .. ' ' .. self.client .. self.IAC_SE)
