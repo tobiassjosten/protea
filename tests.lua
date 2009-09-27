@@ -118,11 +118,13 @@ module('protea.core.atcp', lunit.testcase, package.seeall)
 function SetUp()
 	listeners = event.listeners
 	test_atcp_variable = nil
+	SendPkt()
 end
 
 function TearDown()
 	event.listeners = listeners
 	test_atcp_variable = nil
+	SendPkt()
 end
 
 function TestATCPInitialization()
@@ -153,4 +155,9 @@ function TestATCPExtract()
 	assert_equal('', packet, 'ATCP extracter did not strip ATCP buffer sequence.')
 	assert_table(test_atcp_variable, 'No ATCP values were extracted from ATCP buffer sequence.')
 	assert_equal('test_value', test_atcp_variable['test_key'], 'Test key/value was not extracted from ATCP buffer sequence.')
+end
+
+function TestATCPParseAuthChallenge()
+	atcp:Parse('\255\250\200Auth.Request CH ygvhnqpakyzubgiejmrc\255\240')
+	assert_match('^\255\250\200auth 1083 Protea .+\255\240$', test_sendpkt_variable, 'Authentication challenge was not met.')
 end

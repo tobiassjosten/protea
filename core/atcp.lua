@@ -27,6 +27,7 @@ local table =
 	insert = table.insert,
 	concat = table.concat,
 }
+local tostring = tostring
 
 module(...)
 
@@ -53,10 +54,12 @@ IAC_DO_EOR = IAC .. DO .. EOR
 IAC_WILL_EOR = IAC .. WILL .. EOR
 IAC_GA = IAC .. GA
 
+client = 'Protea ' .. protea.version
+
 -- Initialization options
 options =
 {
-	{ key = 'hello', value = 'Protea ' .. protea.version },
+	{ key = 'hello', value = client },
 	{ key = 'auth', value = '1' },
 	{ key = 'composer', value = '0' },
 	{ key = 'keepalive', value = '1' },
@@ -120,6 +123,13 @@ function Parse(self, packet)
 	if (string.find(packet, self.IAC_WONT_ATCP)) then
 		event:Raise('atcp', { name = 'status', value = false })
 		packet = string.gsub(packet, self.IAC_WONT_ATCP, '')
+	end
+
+	local packet, values = self:Extract(packet)
+
+	if (values['Auth.Request']) then
+		local auth = self:Auth(string.sub(values['Auth.Request'], 4))
+		SendPkt(self.IAC_SB_ATCP .. 'auth ' .. tostring(auth) .. ' ' .. self.client .. self.IAC_SE)
 	end
 
 	return packet
