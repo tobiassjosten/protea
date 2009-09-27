@@ -20,6 +20,7 @@ local string =
 	find = string.find,
 	gmatch = string.gmatch,
 	gsub = string.gsub,
+	sub = string.sub,
 }
 local table =
 {
@@ -123,3 +124,26 @@ function Parse(self, packet)
 
 	return packet
 end -- Parse()
+
+--- Extract ATCP data from a packet.
+-- 
+function Extract(self, packet)
+	local pattern = self.IAC_SB_ATCP .. '(.-)' .. self.IAC_SE
+
+	local extract = function(data)
+		if not string.find(data, '\10') then
+			data = string.gsub(data, ' ', '\10', 1)
+		end
+		if string.find(data, '\10') then
+			local seperator = data:find('\10')
+			atcp_extract_values[string.sub(data, 1, seperator - 1)] = string.sub(data, seperator + 1)
+		end
+		return ''
+	end
+
+	atcp_extract_values = {}
+
+	packet = string.gsub(packet, pattern, extract)
+
+	return packet, atcp_extract_values
+end -- Extract()

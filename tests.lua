@@ -147,3 +147,10 @@ function TestATCPParseNegotiationWontATCP()
 	assert_equal('', test_atcp_variable_packet, 'ATCP parser did not strip the IAC WONT ATCP sequence.')
 	assert_true(test_atcp_variable, 'ATCP parser did not raise the ATCP event for status = false.')
 end
+
+function TestATCPExtract()
+	local packet, test_atcp_variable = atcp:Extract('\255\250\200test_key test_value\255\240')
+	assert_equal('', packet, 'ATCP extracter did not strip ATCP buffer sequence.')
+	assert_table(test_atcp_variable, 'No ATCP values were extracted from ATCP buffer sequence.')
+	assert_equal('test_value', test_atcp_variable['test_key'], 'Test key/value was not extracted from ATCP buffer sequence.')
+end
