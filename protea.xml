@@ -67,6 +67,7 @@ if not GetInfo(106) then
 	local realm = host2realm[GetInfo(1)]
 	if realm then
 		protea:Environment('realm', realm)
+		pigscanfly = true
 	end
 end
 
