@@ -53,6 +53,7 @@ IAC_SB_ATCP = IAC .. SB.. ATCP
 IAC_SE = IAC .. SE
 IAC_DO_EOR = IAC .. DO .. EOR
 IAC_WILL_EOR = IAC .. WILL .. EOR
+IAC_WONT_EOR = IAC .. WONT.. EOR
 IAC_GA = IAC .. GA
 
 client = 'Protea ' .. protea.version
@@ -151,7 +152,7 @@ function Extract(self, packet)
 			data = string.gsub(data, ' ', '\10', 1)
 		end
 		if string.find(data, '\10') then
-			local seperator = data:find('\10')
+			local seperator = string.find(data, '\10')
 			atcp_extract_values[string.sub(data, 1, seperator - 1)] = string.sub(data, seperator + 1)
 		end
 		return ''
