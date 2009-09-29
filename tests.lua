@@ -163,6 +163,22 @@ function TestATCPParseRaiseEvent()
 	assert_true(test_atcp_variable, 'No event was raised for ATCP data.')
 end
 
+function TestATCPParseMultiplePackets()
+	event:Listen('atcp', function() test_atcp_variable = true end)
+
+	local packet = 'test_before\255\250\200test_key '
+	packet = atcp:Parse(packet)
+	assert_equal('test_before\255\250\200test_key ', packet, 'ATCP parser should not strip incomplete ATCP sequences.')
+
+	assert_nil(test_atcp_variable, 'ATCP parser should not raise event for incomplete data.')
+
+	packet = packet .. 'test_value\255\240test_after'
+	packet = atcp:Parse(packet)
+	assert_equal('test_beforetest_after', packet, 'ATCP parser did not strip the ATCP data.')
+
+	assert_true(test_atcp_variable, 'No event was raised for ATCP data.')
+end
+
 function TestATCPParseAuthChallenge()
 	atcp:Parse('\255\250\200Auth.Request CH ygvhnqpakyzubgiejmrc\255\240')
 	assert_match('^\255\250\200auth 1083 Protea .+\255\240$', test_sendpkt_variable, 'Authentication challenge was not met.')
