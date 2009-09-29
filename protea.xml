@@ -52,7 +52,10 @@ host2realm =
 	['lusternia.com'] = 'lusternia',
 }
 
+buffer = ''
+
 function OnPluginConnect()
+	buffer = ''
 	local realm = host2realm[GetInfo(1)]
 	if realm then
 		atcp:Initialize()
@@ -70,6 +73,23 @@ end
 function OnPluginDisconnect()
 	protea:EnvironmentReset()
 end -- OnPluginDisconnect()
+
+function OnPluginPacketReceived(packet)
+	local packet = atcp:Parse(buffer .. packet)
+
+	if packet:match('Password correct%. Welcome to Imperian%.') then
+		pigscanfly = true
+	end
+
+	-- As long as last two characters is not a GO AHEAD, we have incomplete data
+	if pigscanfly and #packet > 0 and string.sub(packet, #packet - 1) ~= '\255\249' then
+		buffer = packet
+		return ''
+	end
+
+	buffer = ''
+	return packet
+end -- OnPluginPacketReceived()
 
 ]]></script>
 
