@@ -67,7 +67,6 @@ if not GetInfo(106) then
 	local realm = host2realm[GetInfo(1)]
 	if realm then
 		protea:Environment('realm', realm)
-		pigscanfly = true
 	end
 end
 
@@ -78,12 +77,8 @@ end -- OnPluginDisconnect()
 function OnPluginPacketReceived(packet)
 	local packet = atcp:Parse(buffer .. packet)
 
-	if packet:match('Password correct%. Welcome to Imperian%.') then
-		pigscanfly = true
-	end
-
 	-- As long as last two characters is not a GO AHEAD, we have incomplete data
-	if pigscanfly and #packet > 0 and string.sub(packet, #packet - 1) ~= '\255\249' then
+	if GetInfo(103) and #packet > 0 and string.sub(packet, #packet - 1) ~= '\255\249' then
 		buffer = packet
 		return ''
 	end
