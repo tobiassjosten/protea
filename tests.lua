@@ -33,6 +33,7 @@ end
 function TestModulesExistance()
 	assert_table(event, 'Missing Event module.')
 	assert_table(atcp, 'Missing ATCP module.')
+	assert_table(atcp, 'Missing Trigger module.')
 end
 
 function TestModulesLoading()
@@ -182,4 +183,20 @@ end
 function TestATCPParseAuthChallenge()
 	atcp:Parse('\255\250\200Auth.Request CH ygvhnqpakyzubgiejmrc\255\240')
 	assert_match('^\255\250\200auth 1083 Protea .+\255\240$', test_sendpkt_variable, 'Authentication challenge was not met.')
+end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- TRIGGER MODULE
+-- === === === === === === === === === === === === === === === === === === ====
+
+module('protea.core.trigger', lunit.testcase, package.seeall)
+
+function SetUp()
+	triggers = trigger.triggers
+end
+
+function TearDown()
+	trigger.triggers = triggers
 end
