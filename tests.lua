@@ -195,8 +195,16 @@ module('protea.core.trigger', lunit.testcase, package.seeall)
 
 function SetUp()
 	triggers = trigger.triggers
+	test_trigger_variable = nil
 end
 
 function TearDown()
 	trigger.triggers = triggers
+	test_trigger_variable = nil
+end
+
+function TestTriggerSimple()
+	trigger:Add('test', function() test_trigger_variable = true end)
+	trigger:Parse('test')
+	assert_true(test_trigger_variable, 'Simple trigger did not fire.')
 end
