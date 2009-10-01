@@ -10,6 +10,7 @@ local string =
 local table =
 {
   insert = table.insert,
+  sort = table.sort,
 }
 
 module(...)
@@ -34,11 +35,16 @@ end -- Parse()
 
 --- Add a trigger.
 -- 
-function Add(self, pattern, callback)
+function Add(self, pattern, callback, sequence)
   local trigger =
   {
     pattern = pattern,
     callback = callback,
+    sequence = sequence or 0,
   }
   table.insert(self.triggers, trigger)
+
+	if #self.triggers > 1 then
+		table.sort(self.triggers, function(a, b) return a.sequence < b.sequence end)
+	end
 end -- Add()

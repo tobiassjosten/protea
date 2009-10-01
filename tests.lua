@@ -208,3 +208,10 @@ function TestTriggerSimple()
 	trigger:Parse('test')
 	assert_true(test_trigger_variable, 'Simple trigger did not fire.')
 end
+
+function TestTriggerSequence()
+	trigger:Add('test', function() test_trigger_variable = true end, 1)
+	trigger:Add('test', function() test_trigger_variable = false end)
+	trigger:Parse('test')
+	assert_true(test_trigger_variable, 'Triggers fired out of sequence.')
+end
