@@ -70,7 +70,7 @@ end
 module('protea.core.event', lunit.testcase, package.seeall)
 
 function SetUp()
-	listeners = event.listeners
+	listeners = table.clone(event.listeners)
 	test_event_variable = nil
 end
 
@@ -117,7 +117,7 @@ end
 module('protea.core.atcp', lunit.testcase, package.seeall)
 
 function SetUp()
-	listeners = event.listeners
+	listeners = table.clone(event.listeners)
 	test_atcp_variable = nil
 	SendPkt()
 end
@@ -194,7 +194,7 @@ end
 module('protea.core.trigger', lunit.testcase, package.seeall)
 
 function SetUp()
-	triggers = trigger.triggers
+	triggers = table.clone(trigger.triggers)
 	test_trigger_variable = nil
 end
 
