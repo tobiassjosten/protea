@@ -209,6 +209,15 @@ function TestTriggerSimple()
 	assert_true(test_trigger_variable, 'Simple trigger did not fire.')
 end
 
+function TestTriggerPattern()
+	trigger:Add('^test[!&]%a+$', function() test_trigger_variable = true end)
+	trigger:Add('^test[^!&]%a+$', function() test_trigger_variable = false end, 1)
+	trigger:Add('^[!&].+', function() test_trigger_variable = false end, 1)
+	trigger:Parse('test&asdf')
+	assert_not_equal(false, test_trigger_variable, 'Mismatching trigger patterns fired.')
+	assert_true(test_trigger_variable, 'Matching trigger patterns did not fire.')
+end
+
 function TestTriggerSequence()
 	trigger:Add('test', function() test_trigger_variable = true end, 1)
 	trigger:Add('test', function() test_trigger_variable = false end)
