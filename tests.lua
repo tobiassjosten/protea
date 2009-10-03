@@ -209,6 +209,12 @@ function TestTriggerSimple()
 	assert_true(test_trigger_variable, 'Simple trigger did not fire.')
 end
 
+function TestTriggerMatches()
+	trigger:Add('(.+)', function(matches) test_trigger_variable = matches[1] end)
+	trigger:Parse('test')
+	assert_equal('test', test_trigger_variable, 'Parser did not send the pattern capture to the trigger callback.')
+end
+
 function TestTriggerPattern()
 	trigger:Add('^test[!&]%a+$', function() test_trigger_variable = true end)
 	trigger:Add('^test[^!&]%a+$', function() test_trigger_variable = false end, 1)

@@ -52,8 +52,9 @@ function Parse(self, paragraph)
 		for _, trigger in ipairs(self.triggers) do
 			if #paragraph >= trigger.lines - 1 + line then
 				local paragraph = table.concat(paragraph, '\n', line, trigger.lines - 1 + line)
-				if string.match(paragraph, trigger.pattern) then
-					trigger.callback()
+				local match = { string.match(paragraph, trigger.pattern) }
+				if #match > 0 then
+					trigger.callback(match)
 				end
 			end
 		end
