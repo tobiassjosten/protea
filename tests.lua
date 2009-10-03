@@ -204,41 +204,41 @@ function TearDown()
 end
 
 function TestTriggerSimple()
-	trigger:Add('test', function() test_trigger_variable = true end)
-	trigger:Parse('test')
+	trigger:Add('test suite', 'test', function() test_trigger_variable = true end)
+	trigger:Parse('test suite', 'test')
 	assert_true(test_trigger_variable, 'Simple trigger did not fire.')
 end
 
 function TestTriggerMatches()
-	trigger:Add('(.+)', function(matches) test_trigger_variable = matches[1] end)
-	trigger:Parse('test')
+	trigger:Add('test suite', '(.+)', function(matches) test_trigger_variable = matches[1] end)
+	trigger:Parse('test suite', 'test')
 	assert_equal('test', test_trigger_variable, 'Parser did not send the pattern capture to the trigger callback.')
 end
 
 function TestTriggerPattern()
-	trigger:Add('^test[!&]%a+$', function() test_trigger_variable = true end)
-	trigger:Add('^test[^!&]%a+$', function() test_trigger_variable = false end, 1)
-	trigger:Add('^[!&].+', function() test_trigger_variable = false end, 1)
-	trigger:Parse('test&asdf')
+	trigger:Add('test suite', '^test[!&]%a+$', function() test_trigger_variable = true end)
+	trigger:Add('test suite', '^test[^!&]%a+$', function() test_trigger_variable = false end, 1)
+	trigger:Add('test suite', '^[!&].+', function() test_trigger_variable = false end, 1)
+	trigger:Parse('test suite', 'test&asdf')
 	assert_not_equal(false, test_trigger_variable, 'Mismatching trigger patterns fired.')
 	assert_true(test_trigger_variable, 'Matching trigger patterns did not fire.')
 end
 
 function TestTriggerSequence()
-	trigger:Add('test', function() test_trigger_variable = true end, 1)
-	trigger:Add('test', function() test_trigger_variable = false end)
-	trigger:Parse('test')
+	trigger:Add('test suite', 'test', function() test_trigger_variable = true end, 1)
+	trigger:Add('test suite', 'test', function() test_trigger_variable = false end)
+	trigger:Parse('test suite', 'test')
 	assert_true(test_trigger_variable, 'Triggers fired out of sequence.')
 end
 
 function TestTriggerMultilineParagraph()
-	trigger:Add('^two$', function() test_trigger_variable = true end)
-	trigger:Parse('one\ntwo')
+	trigger:Add('test suite', '^two$', function() test_trigger_variable = true end)
+	trigger:Parse('test suite', 'one\ntwo')
 	assert_true(test_trigger_variable, 'Pattern anchor did not work with multiline paragraph.')
 end
 
 function TestTriggerMultilinePattern()
-	trigger:Add({ '^one\ntwo$', 2 }, function() test_trigger_variable = true end)
-	trigger:Parse('one\ntwo')
+	trigger:Add('test suite', { '^one\ntwo$', 2 }, function() test_trigger_variable = true end)
+	trigger:Parse('test suite', 'one\ntwo')
 	assert_true(test_trigger_variable, 'Multiline pattern trigger did not fire.')
 end

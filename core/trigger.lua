@@ -27,12 +27,16 @@ triggers = {}
 -- TRIGGER METHODS
 -- === === === === === === === === === === === === === === === === === === ====
 
---- Parse paragraph and look for trigger matches.
+--- Parse chunk and look for trigger matches.
 -- 
-function Parse(self, paragraph)
-	if type(paragraph) == 'string' then
+function Parse(self, source, chunk)
+	if not self.triggers[source] then
+		return
+	end
+
+	if type(chunk) == 'string' then
 		local lines, ansi_leftovers = {}, nil
-		for line in string.gmatch(paragraph .. '\10', '(.-)[\10\255]\249?') do
+		for line in string.gmatch(chunk .. '\10', '(.-)[\10\255]\249?') do
 			if #string.gsub(line, '\27%[.-m', '') > 0 then
 				table.insert(lines, (ansi_leftovers or '') .. line)
 				ansi_leftovers = nil
@@ -43,17 +47,17 @@ function Parse(self, paragraph)
       end
 		end
 
-		self:Parse(lines)
+		self:Parse(source, lines)
 
 		return
 	end
 
-	for line in ipairs(paragraph) do
-		for _, trigger in ipairs(self.triggers) do
-			if #paragraph >= trigger.lines - 1 + line then
-				local paragraph = table.concat(paragraph, '\n', line, trigger.lines - 1 + line)
-				paragraph = string.gsub(paragraph, '\27%[.-m', '')
-				local match = { string.match(paragraph, trigger.pattern) }
+	for line in ipairs(chunk) do
+		for _, trigger in ipairs(self.triggers[source]) do
+			if #chunk >= trigger.lines - 1 + line then
+				local chunk = table.concat(chunk, '\n', line, trigger.lines - 1 + line)
+				chunk = string.gsub(chunk, '\27%[.-m', '')
+				local match = { string.match(chunk, trigger.pattern) }
 				if #match > 0 then
 					trigger.callback(match)
 				end
@@ -64,10 +68,14 @@ end -- Parse()
 
 --- Add a trigger.
 -- 
-function Add(self, pattern, callback, sequence)
+function Add(self, source, pattern, callback, sequence)
 	local lines = (type(pattern) == 'table' and pattern[2] or 1)
 	local pattern = (type(pattern) == 'table' and pattern[1] or pattern)
 	local sequence = sequence or 0
+
+	if not self.triggers[source] then
+		self.triggers[source] = {}
+	end
 
 	local trigger =
 	{
@@ -76,9 +84,9 @@ function Add(self, pattern, callback, sequence)
 		sequence = sequence,
 		lines = lines,
 	}
-	table.insert(self.triggers, trigger)
+	table.insert(self.triggers[source], trigger)
 
-	if #self.triggers > 1 then
-		table.sort(self.triggers, function(a, b) return a.sequence < b.sequence end)
+	if #self.triggers[source] > 1 then
+		table.sort(self.triggers[source], function(a, b) return a.sequence < b.sequence end)
 	end
 end -- Add()
