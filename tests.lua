@@ -224,3 +224,9 @@ function TestTriggerSequence()
 	trigger:Parse('test')
 	assert_true(test_trigger_variable, 'Triggers fired out of sequence.')
 end
+
+function TestTriggerMultilineParagraph()
+	trigger:Add('^two$', function() test_trigger_variable = true end)
+	trigger:Parse('one\ntwo')
+	assert_true(test_trigger_variable, 'Pattern anchor did not work with multiline paragraph.')
+end
