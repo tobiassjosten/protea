@@ -47,10 +47,10 @@ function Parse(self, source, chunk)
       end
 		end
 
-		self:Parse(source, lines)
-
-		return
+		return self:Parse(source, lines)
 	end
+
+	local matched = false
 
 	for line in ipairs(chunk) do
 		for _, trigger in ipairs(self.triggers[source]) do
@@ -59,11 +59,14 @@ function Parse(self, source, chunk)
 				chunk = string.gsub(chunk, '\27%[.-m', '')
 				local match = { string.match(chunk, trigger.pattern) }
 				if #match > 0 then
+					matched = true
 					trigger.callback(match)
 				end
 			end
 		end
 	end
+
+	return matched
 end -- Parse()
 
 --- Add a trigger.

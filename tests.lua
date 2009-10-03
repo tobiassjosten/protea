@@ -205,8 +205,9 @@ end
 
 function TestTriggerSimple()
 	trigger:Add('test suite', 'test', function() test_trigger_variable = true end)
-	trigger:Parse('test suite', 'test')
+	local matched = trigger:Parse('test suite', 'test')
 	assert_true(test_trigger_variable, 'Simple trigger did not fire.')
+	assert_true(matched, 'Trigger parser did not say that it matched any triggers.')
 end
 
 function TestTriggerMatches()

@@ -83,9 +83,17 @@ function OnPluginPacketReceived(packet)
 		return ''
 	end
 
+	trigger:Parse('mud', packet)
+
 	buffer = ''
 	return packet
 end -- OnPluginPacketReceived()
+
+function OnPluginSend(input)
+	if trigger:Parse('user', input) then
+		return false
+	end
+end -- OnPluginSend()
 
 ]]></script>
 
