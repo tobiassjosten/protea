@@ -65,7 +65,7 @@ function protea:ModuleLoad(name, realm)
 		return
 	end
 
-	local success, module_instance = pcall(require, (realm or 'core') .. '.' .. name)
+	local success, module_instance = pcall(require, (realm and ('realms.' .. realm) or 'core') .. '.' .. name)
 	if not success and not module_instance:match('^module \'.+\' not found:.+') then
 		print('ERROR: ' .. tostring(module_instance))
 	end

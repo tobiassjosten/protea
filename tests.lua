@@ -3,7 +3,7 @@
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'bit'
+require 'library.bit'
 
 -- Adapter functions
 SendPkt = function(packet) test_sendpkt_variable = packet end
