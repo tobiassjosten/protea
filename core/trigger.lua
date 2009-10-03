@@ -52,6 +52,7 @@ function Parse(self, paragraph)
 		for _, trigger in ipairs(self.triggers) do
 			if #paragraph >= trigger.lines - 1 + line then
 				local paragraph = table.concat(paragraph, '\n', line, trigger.lines - 1 + line)
+				paragraph = string.gsub(paragraph, '\27%[.-m', '')
 				local match = { string.match(paragraph, trigger.pattern) }
 				if #match > 0 then
 					trigger.callback(match)
