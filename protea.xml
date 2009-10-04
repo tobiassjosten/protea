@@ -90,9 +90,10 @@ function OnPluginPacketReceived(packet)
 end -- OnPluginPacketReceived()
 
 function OnPluginSend(input)
-	if trigger:Parse('user', input) then
-		return false
+	if not trigger:Parse('user', input) then
+		command:Queue(input)
 	end
+	return false
 end -- OnPluginSend()
 
 ]]></script>
