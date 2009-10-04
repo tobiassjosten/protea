@@ -1,1 +1,47 @@
-Protea is a gaming enhancement system tailored for Iron Realms Entertainment MUDs.
+WHAT IS PROTEA?
+
+Protea is a gaming enhancement system tailored for Iron Realms Entertainment
+MUDs. Its primary aim is to ease gameplay and make it easier for both newcomers
+and more seasoned players to immerse themselves in the wonderful worlds of IRE.
+
+Protea acts as a middle man between the player and the game server, where it
+tracks commands sent by the player and output recieved from the server. The
+inner workings are quite complex, using advanced algorithms for artificial
+intelligence to become aware of the environment and predict events.
+
+Luckily, one of the key focuses is to hide all of this from the user, to allow
+her to do what matters in the world - play the game.
+
+This is an open source project licenced under the GNU General Public License.
+
+
+
+HOW DO I USE PROTEA?
+
+Protea requires MUSHclient, which can be found at http://www.gammon.com.au/.
+
+1) Download Protea. Currently there are no releases, so cloning the Git repo is
+   the preferred way of downloading.
+
+2) Load the plugin in MUSHclient. Go to File -> Plugins and then click the Add
+   button. Go to where you downloaded Protea and select protea.xml. Click Open.
+
+3) Enjoy!
+
+Currently Protea is available only as a MUSHclient plugin. However, it is being
+architectured in such a way that writing adapters also for other clients will
+be possible in the future.
+
+
+
+WHERE CAN I FIND MORE INFORMATION?
+
+The project page is located at http://github.com/tobiassjosten/protea. There
+you can find the bleeding edge versions and help contribute to the project by
+submitting bug reports and feature requests, ask questions and even fork the
+project to help with actual coding.
+
+Documentation is severely lacking. If you have any questions though, feel free
+to ask by creating an issue at the project page.
+
+Information about the supported games can be found at http://ironrealms.com/.
