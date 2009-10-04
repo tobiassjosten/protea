@@ -7,6 +7,7 @@ require 'library.bit'
 
 -- Adapter functions
 SendPkt = function(packet) test_sendpkt_variable = packet end
+Send = function(action) test_send_variable = action end
 
 require 'core.init'
 
@@ -120,12 +121,14 @@ module('protea.core.atcp', lunit.testcase, package.seeall)
 function SetUp()
 	listeners = table.clone(event.listeners)
 	test_atcp_variable = nil
+	test_sendpkt_variable = nil
 	SendPkt()
 end
 
 function TearDown()
 	event.listeners = listeners
 	test_atcp_variable = nil
+	test_sendpkt_variable = nil
 	SendPkt()
 end
 
@@ -243,4 +246,35 @@ function TestTriggerMultilinePattern()
 	trigger:Add('test suite', { '^one\ntwo$', 2 }, function() test_trigger_variable = true end)
 	trigger:Parse('test suite', 'one\ntwo')
 	assert_true(test_trigger_variable, 'Multiline pattern trigger did not fire.')
+end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- COMMAND MODULE
+-- === === === === === === === === === === === === === === === === === === ====
+
+module('protea.core.command', lunit.testcase, package.seeall)
+
+function SetUp()
+	queue = table.clone(command.queue)
+	test_command_variable = nil
+	test_send_variable = nil
+end
+
+function TearDown()
+	command.queue = queue
+	test_command_variable = nil
+	test_send_variable = nil
+end
+
+function TestCommandSend()
+	command:Queue('test')
+	assert_equal('test', test_send_variable, 'Command was not sent.')
+end
+
+function TestCommandEvent()
+	event:Listen('command', function(parameters) test_command_variable = parameters['value'] end, { name = 'sent' })
+	command:Queue('test')
+	assert_equal('test', test_command_variable, 'Command did not raise the proper event.')
 end
