@@ -295,3 +295,10 @@ function TestCommandTimeout()
 	command:Tick()
 	assert_false(command:Get('test'), 'Command did not properly timeout.')
 end
+
+function TestCommandSuccess()
+	command:Queue('test')
+	command:Success('test')
+	command:Succeed()
+	assert_false(command:Get('test'), 'Command was not marked as successful and removed.')
+end
