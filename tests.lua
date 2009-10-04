@@ -278,3 +278,8 @@ function TestCommandEvent()
 	command:Queue('test')
 	assert_equal('test', test_command_variable, 'Command did not raise the proper event.')
 end
+
+function TestCommandCheckQueue()
+	command:Queue('test')
+	assert_equal('test', command:Get('test'), 'Could not get the command from queue.')
+end
