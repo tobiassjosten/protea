@@ -281,5 +281,7 @@ end
 
 function TestCommandCheckQueue()
 	command:Queue('test')
-	assert_equal('test', command:Get('test'), 'Could not get the command from queue.')
+	command:Queue('tests')
+	assert_equal('test', command:Get('test'), 'Could not get the first command from queue.')
+	assert_equal('tests', command:Get('tests+'), 'Could not get the second command from queue.')
 end
