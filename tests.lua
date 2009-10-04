@@ -285,3 +285,13 @@ function TestCommandCheckQueue()
 	assert_equal('test', command:Get('test'), 'Could not get the first command from queue.')
 	assert_equal('tests', command:Get('tests+'), 'Could not get the second command from queue.')
 end
+
+function TestCommandTimeout()
+	command:Queue('test')
+	for i = 1, 14 do
+		command:Tick()
+	end
+	assert_equal('test', command:Get('test'), 'Command should not yet timeout.')
+	command:Tick()
+	assert_false(command:Get('test'), 'Command did not properly timeout.')
+end
