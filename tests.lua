@@ -302,3 +302,13 @@ function TestCommandSuccess()
 	command:Succeed()
 	assert_false(command:Get('test'), 'Command was not marked as successful and removed.')
 end
+
+function TestCommandSuccessMultiple()
+	command:Queue('a')
+	command:Queue('b')
+	command:Queue('c')
+	command:Success('b')
+	command:Succeed()
+	assert_false(command:Get('a'), 'Command was not marked as successful and removed.')
+	assert_equal('c', command:Get('c'), 'Command should not have been reset.')
+end
