@@ -98,6 +98,7 @@ protea:ModuleLoad('event')
 protea:ModuleLoad('atcp')
 protea:ModuleLoad('trigger')
 protea:ModuleLoad('command')
+protea:ModuleLoad('state')
 
 -- Load realm specific modules when realm is detected
 event:Listen('environment', function(parameters) protea:ModuleLoad(nil, parameters['value']) end, { name = 'realm' })

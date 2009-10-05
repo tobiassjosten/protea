@@ -36,6 +36,7 @@ function TestModulesExistance()
 	assert_table(atcp, 'Missing ATCP module.')
 	assert_table(trigger, 'Missing Trigger module.')
 	assert_table(command, 'Missing Command module.')
+	assert_table(state, 'Missing State module.')
 end
 
 function TestModulesLoading()
