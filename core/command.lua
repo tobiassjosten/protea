@@ -29,8 +29,8 @@ history = {}
 
 --- Queue a command.
 -- 
-function Queue(self, command)
-	table.insert(self.queue, { command = command, ticks = 15 })
+function Queue(self, command, count)
+	table.insert(self.queue, { command = command, ticks = (count or 3) })
 	Send(command)
 	event:Raise('command', { name = 'sent', value = command })
 end -- Queue()
@@ -49,19 +49,19 @@ end -- Get()
 
 --- Heartbeat for command queue.
 -- 
-function Tick(self)
+function Tick(self, count)
 	if #self.queue <= 0 then
 		return
 	end
 
 	local i = 1
 	while i <= #self.queue do
-		if self.queue[i].ticks <= 1 then
+		if self.queue[i].ticks <= (0 + count) then
 			table.insert(self.history, self.queue[i])
 			table.remove(self.queue, i)
 			event:Raise('command', { name = 'timeout', value = self.history[#self.history].command })
 		else
-			self.queue[i].ticks = self.queue[i].ticks - 1
+			self.queue[i].ticks = self.queue[i].ticks - count
 			i = i + 1
 		end
 	end

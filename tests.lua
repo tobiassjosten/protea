@@ -290,10 +290,10 @@ end
 function TestCommandTimeout()
 	command:Queue('test')
 	for i = 1, 14 do
-		command:Tick()
+		command:Tick(.2)
 	end
 	assert_equal('test', command:Get('test'), 'Command should not yet timeout.')
-	command:Tick()
+	command:Tick(.2)
 	assert_false(command:Get('test'), 'Command did not properly timeout.')
 end
 
