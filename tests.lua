@@ -313,3 +313,26 @@ function TestCommandSuccessMultiple()
 	assert_false(command:Get('a'), 'Command was not marked as successful and removed.')
 	assert_equal('c', command:Get('c'), 'Command should not have been reset.')
 end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- STATE MODULE
+-- === === === === === === === === === === === === === === === === === === ====
+
+module('protea.core.state', lunit.testcase, package.seeall)
+
+function SetUp()
+	states = table.clone(state.states)
+	test_state_variable = nil
+end
+
+function TearDown()
+	state.states = states
+	test_state_variable = nil
+end
+
+function TestStateSetGet()
+	state:Set('test', true)
+	assert_true(state:Get('test'), 'State was not set to true.')
+end
