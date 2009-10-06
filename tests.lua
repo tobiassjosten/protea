@@ -333,6 +333,8 @@ function TearDown()
 end
 
 function TestStateSetGet()
+	event:Listen('state', function() test_state_variable = true end, { name = 'test', value = true })
 	state:Set('test', true)
 	assert_true(state:Get('test'), 'State was not set to true.')
+	assert_true(test_state_variable, 'State change did not raise event.')
 end
