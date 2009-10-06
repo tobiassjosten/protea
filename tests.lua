@@ -340,10 +340,20 @@ function TestStateSetGet()
 end
 
 function TestStateTimed()
+	event:Listen('state', function() test_state_variable = true end, { name = 'test', value = nil })
 	state:SetTimed('test', true, 1)
 	assert_true(state:Get('test'), 'State was not set to true.')
 	state:Tick(.5)
 	assert_true(state:Get('test'), 'State should still be true when not yet timed out.')
 	state:Tick(.5)
 	assert_false(state:Get('test'), 'State should have timed out.')
+	assert_true(test_state_variable, 'State timeout did not raise event.')
+end
+
+function TestStateTimedOverCount()
+	event:Listen('state', function() test_state_variable = true end, { name = 'test', value = nil })
+	state:SetTimed('test', true, 1)
+	state:Tick(2)
+	assert_false(state:Get('test'), 'State should have timed out.')
+	assert_true(test_state_variable, 'State timeout did not raise event.')
 end
