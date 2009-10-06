@@ -96,6 +96,18 @@ function OnPluginSend(input)
 	return false
 end -- OnPluginSend()
 
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- HEARTBEAT TIMERS
+-- === === === === === === === === === === === === === === === === === === ====
+
+function ProteaTimerCommandTick() command:Tick(.2) end
+AddTimer('ProteaTimerCommandTick', 0, 0, .2, '', timer_flag.Enabled + timer_flag.ActiveWhenClosed, 'ProteaTimerCommandTick')
+
+function ProteaTimerStateTick() state:Tick(.2) end
+AddTimer('ProteaTimerStateTick', 0, 0, .2, '', timer_flag.Enabled + timer_flag.ActiveWhenClosed, 'ProteaTimerStateTick')
+
 ]]></script>
 
 
