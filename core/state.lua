@@ -9,6 +9,7 @@ local type = type
 module(...)
 
 states = {}
+timed = {}
 
 
 
@@ -26,6 +27,7 @@ function Set(self, name, value, attribute)
 	event:Raise('state', { name = name, value = (type(value) == 'table' and true or value) })
 
 	self.states[name][attribute] = value
+	self.timed[name] = nil
 
 	return self.states[name]
 end -- Set()
@@ -34,6 +36,7 @@ end -- Set()
 function SetTimed(self, name, value, count)
 	self:Set(name, value)
 	self:Set(name, count, 'ticks')
+	self.timed[name] = true
 end -- SetTimed()
 
 --- Get state status.
@@ -43,12 +46,10 @@ end -- Get()
 
 --- Invoke a tick for timed states.
 function Tick(self, count)
-	for key, state in pairs(self.states) do
-		if state.ticks then
-			state.ticks = state.ticks - count
-			if state.ticks <= 0 then
-				self.states[key] = nil
-			end
+	for name in pairs(self.timed) do
+		self.states[name].ticks = (self.states[name].ticks or 0) - count
+		if self.states[name].ticks <= 0 then
+			self.states[name] = nil
 		end
 	end
 end -- Tick()

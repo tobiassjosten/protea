@@ -357,3 +357,10 @@ function TestStateTimedOverCount()
 	assert_false(state:Get('test'), 'State should have timed out.')
 	assert_true(test_state_variable, 'State timeout did not raise event.')
 end
+
+function TestStateTimedReset()
+	state:SetTimed('test', false, 1)
+	state:Set('test', true)
+	state:Tick(1)
+	assert_true(state:Get('test'), 'State should not have timed out.')
+end
