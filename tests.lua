@@ -364,3 +364,10 @@ function TestStateTimedReset()
 	state:Tick(1)
 	assert_true(state:Get('test'), 'State should not have timed out.')
 end
+
+function TestStateTemporary()
+	state:SetTemporary('test', true)
+	assert_true(state:Get('test'), 'Temporary state was not set.')
+	state:Flush()
+	assert_false(state:Get('test'), 'Temporary state should have been flushed.')
+end

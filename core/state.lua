@@ -10,6 +10,7 @@ module(...)
 
 states = {}
 timed = {}
+temporary = {}
 
 
 
@@ -39,6 +40,12 @@ function SetTimed(self, name, value, count)
 	self.timed[name] = true
 end -- SetTimed()
 
+--- Set temporary state.
+function SetTemporary(self, name, value)
+	self:Set(name, value)
+	self.temporary[name] = true
+end -- SetTemporary()
+
 --- Get state status.
 function Get(self, name)
 	return self.states[name] and self.states[name].status or false
@@ -53,3 +60,11 @@ function Tick(self, count)
 		end
 	end
 end -- Tick()
+
+--- Flush temporary states.
+function Flush(self)
+	for name in pairs(self.temporary) do
+		self.states[name] = nil
+	end
+	self.temporary = {}
+end -- Flush()
