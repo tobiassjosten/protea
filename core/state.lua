@@ -25,7 +25,7 @@ function Set(self, name, value, attribute)
 		self.states[name] = {}
 	end
 
-	event:Raise('state', { name = name, value = (type(value) == 'table' and true or value) })
+	event:Raise('state', { name = name, attribute = attribute, value = value })
 
 	self.states[name][attribute] = value
 	self.timed[name] = nil
