@@ -57,6 +57,7 @@ function Tick(self, count)
 		self.states[name].ticks = (self.states[name].ticks or 0) - count
 		if self.states[name].ticks <= 0 then
 			self.states[name] = nil
+			self.timed[name] = nil
 		end
 	end
 end -- Tick()
