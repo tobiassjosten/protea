@@ -352,6 +352,12 @@ function TestStateSetGet()
 	assert_true(test_state_variable, 'State change did not raise event.')
 end
 
+function TestStateSetGetAttribute()
+	state:Set('test', true, 'attribute')
+	assert_false(state:Get('test'), 'State status should default to false.')
+	assert_true(state:Get('test', 'attribute'), 'Attribute of state was not set.')
+end
+
 function TestStateTimed()
 	event:Listen('state', function() test_state_variable = true end, { name = 'test', value = nil })
 	state:SetTimed('test', true, 1)

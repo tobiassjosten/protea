@@ -22,7 +22,7 @@ temporary = {}
 function Set(self, name, value, attribute)
 	attribute = attribute or 'status'
 	if not self.states[name] then
-		self.states[name] = {}
+		self.states[name] = { status = false }
 	end
 
 	event:Raise('state', { name = name, attribute = attribute, value = value })
@@ -47,8 +47,9 @@ function SetTemporary(self, name, value)
 end -- SetTemporary()
 
 --- Get state status.
-function Get(self, name)
-	return self.states[name] and self.states[name].status or false
+function Get(self, name, attribute)
+	attribute = attribute or 'status'
+	return self.states[name] and self.states[name][attribute] or false
 end -- Get()
 
 --- Invoke a tick for timed states.
