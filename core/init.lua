@@ -34,8 +34,22 @@ end -- table.clone()
 
 
 -- === === === === === === === === === === === === === === === === === === ====
--- ENVIRONMENT
+-- EXTEND PROTEA MODULE
 -- === === === === === === === === === === === === === === === === === === ====
+
+--- Illusion handler.
+function protea:Illusion(message)
+	if message then
+		if type(message) ~= 'string' then
+			message = nil
+		end
+		event:Raise('illusion', { message = message })
+		state:SetTemporary('illusion', true)
+	elseif message == false then
+		state:SetTemporary('illusion', false)
+	end
+	return state:Get('illusion')
+end
 
 function protea:Environment(name, value)
 	if value ~= nil then
