@@ -122,6 +122,10 @@ event:Listen('environment', function(parameters) protea:ModuleLoad(nil, paramete
 
 
 
+-- === === === === === === === === === === === === === === === === === === ====
+-- CLOSURE
+-- === === === === === === === === === === === === === === === === === === ====
+
 protea:ModuleLoad('load')
 
 return protea
