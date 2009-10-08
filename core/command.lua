@@ -4,6 +4,7 @@
 
 local event = event
 local ipairs = ipairs
+local protea = protea
 local Send = Send
 local string =
 {
@@ -13,7 +14,9 @@ local table =
 {
 	insert = table.insert,
 	remove = table.remove,
+	concat = table.concat,
 }
+local tostring = tostring
 local type = type
 
 module(...)
@@ -91,11 +94,20 @@ function Success(self, commands)
 			end
 		end
 	end
+
+	-- No command was found, so we obviously have an illusion
+	protea:Illusion('Command(s) have not been sent: ' .. tostring(table.concat(input, ', ')))
 end -- Success()
 
 --- Reset queue from successful commands.
 -- 
 function Succeed(self)
+	if protea:Illusion() then
+		self.success_queue = nil
+		self.success_history = nil
+		return
+	end
+
 	if self.success_queue then
 		self.history = {}
 		for i = 1, self.success_queue do

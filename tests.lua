@@ -17,18 +17,20 @@ require 'core.init'
 -- PROTEA CORE
 -- === === === === === === === === === === === === === === === === === === ====
 
-module('protea.core', lunit.testcase, package.seeall)
+module('protea.testcore', lunit.testcase, package.seeall)
 
 function SetUp()
 	protea:EnvironmentReset()
 	modules_queue = protea.modules_queue
 	test_core_variable = nil
+	states = table.clone(state.states)
 end
 
 function TearDown()
 	protea:EnvironmentReset()
 	protea.modules_queue = modules_queue
 	test_core_variable = nil
+	state.states = states
 end
 
 function TestModulesExistance()
@@ -64,13 +66,20 @@ function TestEnvironmentRealmLoading()
 	assert_true(test_core_variable, 'Init module in test realm package was not loaded.')
 end
 
+function TestIllusion()
+	protea:Illusion('test')
+	assert_true(protea:Illusion(), 'Illusion detection was not set.')
+	state:Flush()
+	assert_false(protea:Illusion(), 'Illusion detection was not properly cleared.')
+end
+
 
 
 -- === === === === === === === === === === === === === === === === === === ====
 -- EVENT MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-module('protea.core.event', lunit.testcase, package.seeall)
+module('protea.core.testevent', lunit.testcase, package.seeall)
 
 function SetUp()
 	listeners = table.clone(event.listeners)
@@ -117,7 +126,7 @@ end
 -- ATCP MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-module('protea.core.atcp', lunit.testcase, package.seeall)
+module('protea.core.testatcp', lunit.testcase, package.seeall)
 
 function SetUp()
 	listeners = table.clone(event.listeners)
@@ -196,7 +205,7 @@ end
 -- TRIGGER MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-module('protea.core.trigger', lunit.testcase, package.seeall)
+module('protea.core.testtrigger', lunit.testcase, package.seeall)
 
 function SetUp()
 	triggers = table.clone(trigger.triggers)
@@ -255,18 +264,20 @@ end
 -- COMMAND MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-module('protea.core.command', lunit.testcase, package.seeall)
+module('protea.core.testcommand', lunit.testcase, package.seeall)
 
 function SetUp()
 	queue = table.clone(command.queue)
 	test_command_variable = nil
 	test_send_variable = nil
+	state:Set('illusion', false)
 end
 
 function TearDown()
 	command.queue = queue
 	test_command_variable = nil
 	test_send_variable = nil
+	state:Set('illusion', false)
 end
 
 function TestCommandSend()
@@ -320,15 +331,17 @@ end
 -- STATE MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-module('protea.core.state', lunit.testcase, package.seeall)
+module('protea.core.teststate', lunit.testcase, package.seeall)
 
 function SetUp()
 	states = table.clone(state.states)
+	listeners = table.clone(event.listeners)
 	test_state_variable = nil
 end
 
 function TearDown()
 	state.states = states
+	listeners = table.clone(event.listeners)
 	test_state_variable = nil
 end
 
