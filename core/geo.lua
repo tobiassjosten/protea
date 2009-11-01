@@ -4,7 +4,7 @@
 
 module(...)
 
-rooms = {}
+map = {}
 
 
 
@@ -13,12 +13,12 @@ rooms = {}
 -- === === === === === === === === === === === === === === === === === === ====
 
 -- Load map.
-function Load(self, rooms)
-	self.rooms = rooms
+function Load(self, map)
+	self.map = map
 	return true
-end
+end -- Load()
 
 --- Save map.
 function Save(self)
-	return self.rooms
-end
+	return self.map
+end -- Save()

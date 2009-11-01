@@ -39,7 +39,7 @@ function TestModulesExistance()
 	assert_table(trigger, 'Missing Trigger module.')
 	assert_table(command, 'Missing Command module.')
 	assert_table(state, 'Missing State module.')
-	assert_table(map, 'Missing Map module.')
+	assert_table(geo, 'Missing Geo module.')
 end
 
 function TestModulesLoading()
@@ -395,20 +395,20 @@ end
 
 
 -- === === === === === === === === === === === === === === === === === === ====
--- MAP MODULE
+-- GEO MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-module('protea.core.testmap', lunit.testcase, package.seeall)
+module('protea.core.testgeo', lunit.testcase, package.seeall)
 
 function SetUp()
-	rooms = table.clone(map.rooms)
+	map = table.clone(geo.map)
 end
 
 function TearDown()
-	map.rooms = rooms
+	geo.map = map
 end
 
-function TestMapSetGet()
-	assert_true(map:Load({}), 'Empty map could not be loaded.')
-	assert_table(map:Save(), 'Map was not properly returned.')
+function TestGeoSetGet()
+	assert_true(geo:Load({}), 'Empty map could not be loaded.')
+	assert_table(geo:Save(), 'Map was not properly returned.')
 end
