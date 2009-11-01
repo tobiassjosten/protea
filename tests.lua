@@ -391,3 +391,24 @@ function TestStateTemporary()
 	state:Flush()
 	assert_false(state:Get('test'), 'Temporary state should have been flushed.')
 end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- MAP MODULE
+-- === === === === === === === === === === === === === === === === === === ====
+
+module('protea.core.testmap', lunit.testcase, package.seeall)
+
+function SetUp()
+	rooms = table.clone(map.rooms)
+end
+
+function TearDown()
+	map.rooms = rooms
+end
+
+function TestMapSetGet()
+	assert_true(map:Load({}), 'Empty map could not be loaded.')
+	assert_table(map:Save(), 'Map was not properly returned.')
+end
