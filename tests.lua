@@ -454,3 +454,19 @@ function TestGeoExits()
 	geo:Load(sample_map)
 	assert_equal('Room B', tostring(geo:Room(1).exits.east), 'Exits were not properly loaded.')
 end
+
+function TestGeoPathing()
+	geo:Load(sample_map)
+	local path = geo:Path(geo:Room(1), geo:Room(3))
+	assert_table(path, 'Did not get a propery path.')
+	assert_equal('east', path[1], 'First direction in path should be east')
+	assert_equal('east', path[2], 'Second direction in path should be east')
+end
+
+function TestGeoPathingReverse()
+	geo:Load(sample_map)
+	local path = geo:Path(geo:Room(3), geo:Room(1))
+	assert_table(path, 'Did not get a propery path.')
+	assert_equal('west', path[1], 'First direction in path should be west')
+	assert_equal('west', path[2], 'Second direction in path should be west')
+end
