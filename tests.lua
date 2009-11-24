@@ -392,6 +392,19 @@ function TestStateTemporary()
 	assert_false(state:Get('test'), 'Temporary state should have been flushed.')
 end
 
+function TestStateQueue()
+	state:Queue('test', true)
+	state:Parse()
+	assert_true(state:Get('test'), 'State queue was not parsed')
+end
+
+function TestStateQueue()
+	state:Queue('test', true)
+	state:Dequeue('test')
+	state:Parse()
+	assert_false(state:Get('test'), 'State could not be removed from queue')
+end
+
 
 
 -- === === === === === === === === === === === === === === === === === === ====

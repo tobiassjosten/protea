@@ -4,6 +4,7 @@
 
 local event = event
 local pairs = pairs
+local protea = protea
 local type = type
 
 module(...)
@@ -11,6 +12,7 @@ module(...)
 states = {}
 timed = {}
 temporary = {}
+queue = {}
 
 
 
@@ -70,3 +72,30 @@ function Flush(self)
 	end
 	self.temporary = {}
 end -- Flush()
+
+
+
+-- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
+-- STATE QUEUE
+-- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
+
+--- Queue state.
+function Queue(self, name, value)
+	self.queue[name] = value
+end -- Queue
+
+--- Remove state from the queue.
+function Dequeue(self, name)
+	self.queue[name] = nil
+end -- Dequeue
+
+--- Parse the queue.
+function Parse(self)
+	if not protea:Illusion() then
+		for name, value in pairs(self.queue) do
+			self:Set(name, value)
+		end
+	end
+
+	self.queue = {}
+end -- Parse()

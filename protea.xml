@@ -84,6 +84,7 @@ function OnPluginPacketReceived(packet)
 	end
 
 	trigger:Parse('mud', packet)
+	state:Parse()
 	state:Flush()
 
 	buffer = ''
