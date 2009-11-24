@@ -116,6 +116,7 @@ protea:ModuleLoad('atcp')
 protea:ModuleLoad('trigger')
 protea:ModuleLoad('command')
 protea:ModuleLoad('state')
+protea:ModuleLoad('action')
 protea:ModuleLoad('geo')
 
 -- Load realm specific modules when realm is detected

@@ -39,6 +39,7 @@ function TestModulesExistance()
 	assert_table(trigger, 'Missing Trigger module.')
 	assert_table(command, 'Missing Command module.')
 	assert_table(state, 'Missing State module.')
+	assert_table(action, 'Missing Action module.')
 	assert_table(geo, 'Missing Geo module.')
 end
 
