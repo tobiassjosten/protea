@@ -409,6 +409,28 @@ end
 
 
 -- === === === === === === === === === === === === === === === === === === ====
+-- ACTION MODULE
+-- === === === === === === === === === === === === === === === === === === ====
+
+module('protea.core.testaction', lunit.testcase, package.seeall)
+
+function SetUp()
+	actions = table.clone(action.actions)
+end
+
+function TearDown()
+	action.actions = actions
+end
+
+function TestActionCheck()
+	assert_true(action:Validate('test'), 'Test action should validate.')
+	state:Set('pause', true)
+	assert_false(action:Validate('test'), 'Test action should not validate when system is paused.')
+end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
 -- GEO MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
