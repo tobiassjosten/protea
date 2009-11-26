@@ -21,8 +21,9 @@ local type = type
 
 module(...)
 
-queue = {}
+sent = {}
 history = {}
+queue = {}
 
 
 
@@ -30,18 +31,18 @@ history = {}
 -- COMMAND METHODS
 -- === === === === === === === === === === === === === === === === === === ====
 
---- Queue a command.
+--- Send a command.
 -- 
-function Queue(self, command, count)
-	table.insert(self.queue, { command = command, ticks = (count or 3) })
+function Send(self, command)
+	table.insert(self.sent, { command = command, ticks = 3 })
 	adapter:Send(command)
 	event:Raise('command', { name = 'send', value = command })
-end -- Queue()
+end -- Send()
 
---- Fetch a queued command.
+--- Fetch a sent command.
 -- 
 function Get(self, pattern)
-	for _, item in ipairs(self.queue) do
+	for _, item in ipairs(self.sent) do
 		if string.match(item.command, pattern) then
 			return item.command
 		end
@@ -50,21 +51,53 @@ function Get(self, pattern)
 	return false
 end -- Get()
 
---- Heartbeat for command queue.
+--- Queue a command.
+-- 
+function Queue(self, command)
+	table.insert(self.queue, command)
+	event:Raise('command', { name = 'queue', value = command })
+end -- Queue()
+
+--- Fetch a queued command.
+function QueueGet(self, pattern)
+	for _, item in ipairs(self.queue) do
+		if string.match(item, pattern) then
+			return item
+		end
+	end
+
+	return false
+end -- QueueGet()
+
+--- Flush command queue.
+function QueueFlush(self)
+	self.queue = {}
+	event:Raise('command', { name = 'flush' })
+end -- QueueFlush()
+
+--- Send commands in queue.
+function QueueSend(self)
+	for _, command in ipairs(self.queue) do
+		self:Send(command)
+	end
+	self:QueueFlush()
+end -- QueueSend()
+
+--- Heartbeat for commands.
 -- 
 function Tick(self, count)
-	if #self.queue <= 0 then
+	if #self.sent <= 0 then
 		return
 	end
 
 	local i = 1
-	while i <= #self.queue do
-		if self.queue[i].ticks <= (0 + count) then
-			table.insert(self.history, self.queue[i])
-			table.remove(self.queue, i)
+	while i <= #self.sent do
+		if self.sent[i].ticks <= (0 + count) then
+			table.insert(self.history, self.sent[i])
+			table.remove(self.sent, i)
 			event:Raise('command', { name = 'timeout', value = self.history[#self.history].command })
 		else
-			self.queue[i].ticks = self.queue[i].ticks - count
+			self.sent[i].ticks = self.sent[i].ticks - count
 			i = i + 1
 		end
 	end
@@ -77,10 +110,10 @@ function Success(self, commands)
 		commands = { commands }
 	end
 
-	for key, item in ipairs(self.queue) do
+	for key, item in ipairs(self.sent) do
 		for _, command in ipairs(commands) do
 			if string.match(item.command, command) then
-				self.success_queue = key
+				self.success_sent = key
 				return
 			end
 		end
@@ -99,24 +132,24 @@ function Success(self, commands)
 	protea:Illusion('Command(s) have not been sent: ' .. tostring(table.concat(input, ', ')))
 end -- Success()
 
---- Reset queue from successful commands.
+--- Reset successful commands.
 -- 
 function Succeed(self)
 	if protea:Illusion() then
-		self.success_queue = nil
+		self.success_sent = nil
 		self.success_history = nil
 		return
 	end
 
-	if self.success_queue then
+	if self.success_sent then
 		self.history = {}
-		for i = 1, self.success_queue do
-			if i == self.success_queue then
-				event:Raise('command', { name = 'success', value = self.queue[1].command })
+		for i = 1, self.success_sent do
+			if i == self.success_sent then
+				event:Raise('command', { name = 'success', value = self.sent[1].command })
 			else
-				event:Raise('command', { name = 'reset', value = self.queue[1].command })
+				event:Raise('command', { name = 'reset', value = self.sent[1].command })
 			end
-			table.remove(self.queue, 1)
+			table.remove(self.sent, 1)
 		end
 	end
 
@@ -126,6 +159,6 @@ function Succeed(self)
 		end
 	end
 
-	self.success_queue = nil
+	self.success_sent = nil
 	self.success_history = nil
 end -- Reset()
