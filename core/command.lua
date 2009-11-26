@@ -35,7 +35,7 @@ history = {}
 function Queue(self, command, count)
 	table.insert(self.queue, { command = command, ticks = (count or 3) })
 	adapter:Send(command)
-	event:Raise('command', { name = 'sent', value = command })
+	event:Raise('command', { name = 'send', value = command })
 end -- Queue()
 
 --- Fetch a queued command.

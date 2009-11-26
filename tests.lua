@@ -297,7 +297,7 @@ function TestCommandSend()
 end
 
 function TestCommandEvent()
-	event:Listen('command', function(parameters) test_command_variable = parameters['value'] end, { name = 'sent' })
+	event:Listen('command', function(parameters) test_command_variable = parameters['value'] end, { name = 'send' })
 	command:Queue('test')
 	assert_equal('test', test_command_variable, 'Command did not raise the proper event.')
 end
