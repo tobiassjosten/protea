@@ -1,14 +1,25 @@
 -- === === === === === === === === === === === === === === === === === === ====
+-- TEST ADAPTER
+-- === === === === === === === === === === === === === === === === === === ====
+
+adapter = {}
+
+function adapter:SendPkt(packet)
+	self.sendpkt_variable = packet
+end
+
+function adapter:Send(action)
+	self.send_variable = action
+end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
 -- PROTEA TEST SUITE
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
 require 'library.bit'
-
--- Adapter functions
-SendPkt = function(packet) test_sendpkt_variable = packet end
-Send = function(action) test_send_variable = action end
-
 require 'core.init'
 
 
@@ -133,20 +144,18 @@ module('protea.core.testatcp', lunit.testcase, package.seeall)
 function SetUp()
 	listeners = table.clone(event.listeners)
 	test_atcp_variable = nil
-	test_sendpkt_variable = nil
-	SendPkt()
+	adapter.sendpkt_variable = nil
 end
 
 function TearDown()
 	event.listeners = listeners
 	test_atcp_variable = nil
-	test_sendpkt_variable = nil
-	SendPkt()
+	adapter.sendpkt_variable = nil
 end
 
 function TestATCPInitialization()
 	atcp:Initialize()
-	assert_match('^\255\253\200\255\250\200.+\255\240$', test_sendpkt_variable, 'Invalid initialization string.')
+	assert_match('^\255\253\200\255\250\200.+\255\240$', adapter.sendpkt_variable, 'Invalid initialization string.')
 end
 
 function TestATCPAuthentication()
@@ -198,7 +207,7 @@ end
 
 function TestATCPParseAuthChallenge()
 	atcp:Parse('\255\250\200Auth.Request CH ygvhnqpakyzubgiejmrc\255\240')
-	assert_match('^\255\250\200auth 1083 Protea .+\255\240$', test_sendpkt_variable, 'Authentication challenge was not met.')
+	assert_match('^\255\250\200auth 1083 Protea .+\255\240$', adapter.sendpkt_variable, 'Authentication challenge was not met.')
 end
 
 
@@ -271,20 +280,20 @@ module('protea.core.testcommand', lunit.testcase, package.seeall)
 function SetUp()
 	queue = table.clone(command.queue)
 	test_command_variable = nil
-	test_send_variable = nil
+	adapter.send_variable = nil
 	state:Set('illusion', false)
 end
 
 function TearDown()
 	command.queue = queue
 	test_command_variable = nil
-	test_send_variable = nil
+	adapter.send_variable = nil
 	state:Set('illusion', false)
 end
 
 function TestCommandSend()
 	command:Queue('test')
-	assert_equal('test', test_send_variable, 'Command was not sent.')
+	assert_equal('test', adapter.send_variable, 'Command was not sent.')
 end
 
 function TestCommandEvent()

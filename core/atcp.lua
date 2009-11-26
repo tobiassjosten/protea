@@ -2,6 +2,7 @@
 -- ATCP MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
+local adapter = adapter
 local bit =
 {
 	bor = bit.bor,
@@ -14,7 +15,6 @@ local math =
 }
 local pairs = pairs
 local protea = protea
-local SendPkt = SendPkt
 local string =
 {
 	byte = string.byte,
@@ -92,7 +92,7 @@ function Initialize(self)
 	end
 	options = table.concat(options, '\10')
 
-	SendPkt(self.IAC_DO_ATCP .. self.IAC_SB_ATCP .. options .. self.IAC_SE)
+	adapter:SendPkt(self.IAC_DO_ATCP .. self.IAC_SB_ATCP .. options .. self.IAC_SE)
 end -- Initialize()
 
 --- ATCP authentication.
@@ -136,7 +136,7 @@ function Parse(self, packet)
 
 	if (values['Auth.Request']) then
 		local auth = self:Auth(string.sub(values['Auth.Request'], 4))
-		SendPkt(self.IAC_SB_ATCP .. 'auth ' .. tostring(auth) .. ' ' .. self.client .. self.IAC_SE)
+		adapter:SendPkt(self.IAC_SB_ATCP .. 'auth ' .. tostring(auth) .. ' ' .. self.client .. self.IAC_SE)
 	end
 
 	return packet

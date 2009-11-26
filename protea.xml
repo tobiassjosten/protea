@@ -30,6 +30,22 @@
 <script><![CDATA[
 
 -- === === === === === === === === === === === === === === === === === === ====
+-- MUSHCLIENT ADAPTER
+-- === === === === === === === === === === === === === === === === === === ====
+
+adapter = {}
+
+function adapter:SendPkt(packet)
+	SendPkt(packet)
+end
+
+function adapter:Send(action)
+	Send(action)
+end
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
 -- LOAD MODULES
 -- === === === === === === === === === === === === === === === === === === ====
 

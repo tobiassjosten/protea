@@ -2,10 +2,10 @@
 -- COMMAND MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
+local adapter = adapter
 local event = event
 local ipairs = ipairs
 local protea = protea
-local Send = Send
 local string =
 {
 	match = string.match,
@@ -34,7 +34,7 @@ history = {}
 -- 
 function Queue(self, command, count)
 	table.insert(self.queue, { command = command, ticks = (count or 3) })
-	Send(command)
+	adapter:Send(command)
 	event:Raise('command', { name = 'sent', value = command })
 end -- Queue()
 
