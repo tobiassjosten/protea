@@ -60,6 +60,10 @@ end -- Queue()
 
 --- Fetch a queued command.
 function QueueGet(self, pattern)
+	if not pattern then
+		return self.queue[1] or false
+	end
+
 	for _, item in ipairs(self.queue) do
 		if string.match(item, pattern) then
 			return item
