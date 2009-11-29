@@ -374,6 +374,16 @@ module('protea.core.teststate', lunit.testcase, package.seeall)
 
 function SetUp()
 	states = table.clone(state.states)
+	state.states['affliction1'] = {
+		status = false,
+		setting = false,
+		disable_actions = { 'cure1' },
+	}
+	state.states['affliction2'] = {
+		status = false,
+		setting = false,
+		disable_actions = { 'cure2' },
+	}
 	listeners = table.clone(event.listeners)
 	test_state_variable = nil
 end
@@ -441,6 +451,12 @@ function TestStateQueue()
 	state:Dequeue('test')
 	state:Parse()
 	assert_false(state:Get('test'), 'State could not be removed from queue.')
+end
+
+function TestStateActions()
+	state:Set('affliction1', true)
+	local actions = state:Actions()
+	assert_equal('cure1', actions[1], 'Actions list was not correctly assembled.')
 end
 
 

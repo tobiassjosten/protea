@@ -2,9 +2,15 @@
 -- STATE MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
+local command = command
 local event = event
+local ipairs = ipairs
 local pairs = pairs
 local protea = protea
+local table =
+{
+	insert = table.insert,
+}
 local type = type
 
 module(...)
@@ -99,3 +105,72 @@ function Parse(self)
 
 	self.queue = {}
 end -- Parse()
+
+
+
+-- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
+-- ACTION INTEGRATION
+-- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
+
+--- Build list of actions.
+function Actions(self)
+	local actions = {}
+
+	for name, state in pairs(self.states) do
+		local state_actions, state_hinders = {}, {}
+		if (state.status and state.setting == false) or (not state.status and state.setting) then
+			if state.status then
+				state_actions = state.disable_actions or {}
+				state_hinders = state.disable_state_hinders or {}
+			elseif not state.status then
+				state_actions = state.enable_actions or {}
+				state_hinders = state.enable_state_hinders or {}
+			end
+
+			if type(state.status) == 'table' then
+				local list_state_actions = {}
+				for _, action_entry in ipairs(state_actions) do
+					if string.find(action_entry, '%%') then
+						for list_entry in pairs(state.status) do
+							action_entry = string.gsub(action_entry, '%%', list_entry)
+							table.insert(list_state_actions, action_entry)
+						end
+					else
+						table.insert(list_state_actions, action_entry)
+					end
+				end
+				state_actions = list_state_actions
+			end
+
+			local state_hindering = false
+			for _, state_hinder in pairs(state_hinders) do
+				if self:Get(state_hinder) then
+					local state_hinder_resolving = false
+					for _, state_hinder_action in pairs(self.states[state_hinder].disable_actions or {}) do
+						if command:QueueGet(state_hinder_action) then
+							state_hinder_resolving = true
+						end
+					end
+					if not state_hinder_resolving then
+						state_hindering = true
+					end
+				end
+			end
+
+			local state_commands_sent = false
+			for _, state_action in ipairs(state_actions) do
+				if command:Get(state_action) or command:QueueGet(state_action) then
+					state_commands_sent = true
+				end
+			end
+
+			if not state_hindering and not state_commands_sent then
+				for _, state_action in ipairs(state_actions) do
+					table.insert(actions, state_action)
+				end
+			end
+		end
+	end
+
+	return actions
+end -- Actions()
