@@ -7,6 +7,10 @@ local event = event
 local ipairs = ipairs
 local pairs = pairs
 local protea = protea
+local string =
+{
+	match = string.match,
+}
 local table =
 {
 	insert = table.insert,
@@ -86,7 +90,31 @@ end -- Flush()
 -- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
 
 --- Queue state.
+-- Add a state and its associated value to the queue, to be added or discarded
+-- later on. This also removes the 'action reset' state if the action that have
+-- been taken could be the reason this state is changing.
 function Queue(self, name, value)
+	local action_reset = self:Get('action reset')
+	if action_reset then
+		local actions
+		if value then
+			actions = self.states[name].disable_actions or {}
+		else
+			actions = self.states[name].enable_actions or {}
+		end
+
+		local match = false
+		for _, action_entry in pairs(actions) do
+			if action_entry == action_reset then
+				match = true
+			end
+		end
+
+		if match then
+			self:Set('action reset', nil)
+		end
+	end
+
 	self.queue[name] = value
 end -- Queue
 
@@ -96,7 +124,32 @@ function Dequeue(self, name)
 end -- Dequeue
 
 --- Parse the queue.
+-- Go through the queue and, if no illusions have been found, change the states
+-- to their associated values. If the 'action reset' state holds an action now,
+-- then we toggle all the states which would have been affected by that action.
 function Parse(self)
+	local action_reset = self:Get('action reset')
+	if action_reset then
+		for state_name, state_entry in pairs(self.states) do
+			local actions
+			if state_entry.status then
+				actions = state_entry.disable_actions or {}
+			else
+				actions = state_entry.enable_actions or {}
+			end
+
+			for _, action_entry in pairs(actions) do
+				if string.match(action_entry, action_reset) then
+					if state_entry.status then
+						self.queue[state_name] = false
+					else
+						self.queue[state_name] = true
+					end
+				end
+			end
+		end
+	end
+
 	if not protea:Illusion() then
 		for name, value in pairs(self.queue) do
 			self:Set(name, value)
