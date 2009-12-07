@@ -65,6 +65,16 @@ function protea:EnvironmentReset()
 	protea:ModuleReset()
 end
 
+function protea:Actions()
+	local actions = {}
+	for _, action_entry in ipairs(state:Actions()) do
+		if action:Validate(action_entry) then
+			table.insert(actions, action_entry)
+		end
+	end
+	return actions
+end
+
 
 
 -- === === === === === === === === === === === === === === === === === === ====

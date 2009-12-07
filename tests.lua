@@ -35,6 +35,11 @@ function SetUp()
 	modules_queue = protea.modules_queue
 	test_core_variable = nil
 	states = table.clone(state.states)
+	state.states['affliction1'] = {
+		status = false,
+		setting = false,
+		disable_actions = { 'cure1' },
+	}
 end
 
 function TearDown()
@@ -84,6 +89,12 @@ function TestIllusion()
 	assert_true(protea:Illusion(), 'Illusion detection was not set.')
 	state:Flush()
 	assert_false(protea:Illusion(), 'Illusion detection was not properly cleared.')
+end
+
+function TestActions()
+	state:Set('affliction1', true)
+	local actions = protea:Actions()
+	assert_equal('cure1', actions[1], 'Actions list was not correctly assembled.')
 end
 
 

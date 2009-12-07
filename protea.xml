@@ -103,10 +103,10 @@ function OnPluginPacketReceived(packet)
 	state:Parse()
 	state:Flush()
 
-	local actions = state:Actions()
+	local actions = protea:Actions()
 	while #actions > 0 do
 		action:Parse(actions)
-		actions = state:Actions()
+		actions = protea:Actions()
 	end
 
 	if command:QueueGet() then
