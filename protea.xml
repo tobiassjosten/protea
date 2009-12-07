@@ -103,13 +103,28 @@ function OnPluginPacketReceived(packet)
 	state:Parse()
 	state:Flush()
 
+	local actions = state:Actions()
+	while #actions > 0 do
+		action:Parse(actions)
+		actions = state:Actions()
+	end
+
+	if command:QueueGet() then
+		if not state:GotSlowCommand() then
+			command:QueueSend()
+		elseif not state:GotSlowCommandHandling() then
+			command:Send(command:QueueGet())
+			command:QueueFlush()
+		end
+	end
+
 	buffer = ''
 	return packet
 end -- OnPluginPacketReceived()
 
 function OnPluginSend(input)
 	if not trigger:Parse('user', input) then
-		command:Queue(input)
+		command:Send(input)
 	end
 	return false
 end -- OnPluginSend()

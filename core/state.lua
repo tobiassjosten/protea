@@ -108,6 +108,27 @@ end -- Parse()
 
 
 
+-- === === === === === === === === === === === === === === === === === === ====
+-- GENERALIZED STATES
+-- === === === === === === === === === === === === === === === === === === ====
+
+--- Slow command.
+function GotSlowCommand(self)
+	return false
+end -- GetSlowCommand()
+
+--- Slow command handling.
+function GotSlowCommandHandling(self)
+	return false
+end -- GetSlowCommandHandling()
+
+--- Command fumble.
+function GotCommandFumble(self)
+	return false
+end -- GetCommandFumble()
+
+
+
 -- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
 -- ACTION INTEGRATION
 -- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----

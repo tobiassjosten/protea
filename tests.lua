@@ -344,6 +344,12 @@ function TestCommandQueue()
 	assert_equal('test', command:QueueGet('test'), 'Command was not added to queue.')
 end
 
+function TestCommandQueueGetFirst()
+	command:Queue('test1')
+	command:Queue('test2')
+	assert_equal('test1', command:QueueGet(), 'First entry in command queue should be the first one inserted.')
+end
+
 function TestCommandQueueSend()
 	command:Queue('test')
 	command:QueueSend()
@@ -469,16 +475,30 @@ module('protea.core.testaction', lunit.testcase, package.seeall)
 
 function SetUp()
 	actions = table.clone(action.actions)
+	queue = table.clone(command.queue)
+	states = table.clone(state.states)
 end
 
 function TearDown()
 	action.actions = actions
+	command.queue = queue
+	state.states = states
 end
 
 function TestActionCheck()
 	assert_true(action:Validate('test'), 'Test action should validate.')
 	state:Set('pause', true)
 	assert_false(action:Validate('test'), 'Test action should not validate when system is paused.')
+end
+
+function TestActionParse()
+	action:Parse({ 'test' })
+	assert_equal('test', command:QueueGet(), 'Action was not properly added to command queue.')
+end
+
+function TestActionParseSequence()
+	action:Parse({ 'test2', 'test2', 'test3', 'test1', 'test3' })
+	assert_equal('test1', command:QueueGet(), 'Action was not properly added first to command queue.')
 end
 
 

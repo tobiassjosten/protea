@@ -2,6 +2,8 @@
 -- ACTION MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
+local command = command
+local ipairs = ipairs
 local next = next
 local pairs = pairs
 local state = state
@@ -96,3 +98,36 @@ function Validate(self, name)
 
 	return true
 end -- Validate()
+
+--- Parse actions and populate command queue.
+function Parse(self, actions)
+	local actions_grouped, action_candidate = {}
+	for _, action in ipairs(actions) do
+		actions_grouped[action] = (actions_grouped[action] or 0) + 1
+	end
+	for _, action in ipairs(actions) do
+		if not action_candidate or actions_grouped[action_candidate] > actions_grouped[action] then
+			action_candidate = action
+		end
+	end
+
+	if action_candidate then
+		local action = self:Get(action_candidate)
+
+		for _, equipment_requirement in pairs(action.equipment_requirements or {}) do
+			if equipment:Count(equipment_requirement) <= 0 then
+				local equipment_action = equipment:Extract(equipment_requirement)
+				command:Queue(equipment_action)
+				if state:GotCommandFumble() then
+					command:Queue(equipment_action)
+				end
+			end
+		end
+
+		command:Queue(action_candidate)
+
+		if state:GotCommandFumble() then
+			command:Queue(action_candidate)
+		end
+	end
+end -- Parse()
