@@ -476,6 +476,27 @@ function TestStateActions()
 	assert_equal('cure1', actions[1], 'Actions list was not correctly assembled.')
 end
 
+function TestStateReset()
+	state:Set('affliction1', true)
+	state:Reset('cure1')
+	state:Parse()
+	assert_false(state:Get('affliction1'), 'State should have been reset.')
+end
+
+function TestStateResetRemoveSet()
+	state:Set('affliction1', true)
+	state:Reset('cure1')
+	state:Set('affliction1', false)
+	assert_nil(state:Get('reset')['affliction1'], 'State should have been unmarked for resetting.')
+end
+
+function TestStateResetRemoveQueue()
+	state:Set('affliction1', true)
+	state:Reset('cure1')
+	state:Queue('affliction1', false)
+	assert_nil(state:Get('reset')['affliction1'], 'State should have been unmarked for resetting.')
+end
+
 
 
 -- === === === === === === === === === === === === === === === === === === ====

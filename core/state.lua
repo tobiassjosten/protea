@@ -31,10 +31,23 @@ queue = {}
 -- === === === === === === === === === === === === === === === === === === ====
 
 --- Set state status.
+-- This sets an attribute of a given state and defaults to setting the 'status'
+-- attribute. Setting a state to the status which it was marked for resetting
+-- to clears all marked states.
 function Set(self, name, value, attribute)
 	attribute = attribute or 'status'
 	if not self.states[name] then
 		self.states[name] = { status = false }
+	end
+
+	if name ~= 'reset' and attribute == 'status' then
+		local reset = self:Get('reset') or {}
+		for reset_state, reset_value in pairs(reset) do
+			if reset_state == name and reset_value == value then
+				self:Set('reset', {})
+				break
+			end
+		end
 	end
 
 	event:Raise('state', { name = name, attribute = attribute, value = value })
@@ -91,27 +104,14 @@ end -- Flush()
 
 --- Queue state.
 -- Add a state and its associated value to the queue, to be added or discarded
--- later on. This also removes the 'action reset' state if the action that have
--- been taken could be the reason this state is changing.
+-- later on. Queueing a state to a status it was marked to be resetted to makes
+-- this also clear all states which were marked for resetting.
 function Queue(self, name, value)
-	local action_reset = self:Get('action reset')
-	if action_reset then
-		local actions
-		if value then
-			actions = self.states[name].disable_actions or {}
-		else
-			actions = self.states[name].enable_actions or {}
-		end
-
-		local match = false
-		for _, action_entry in pairs(actions) do
-			if action_entry == action_reset then
-				match = true
-			end
-		end
-
-		if match then
-			self:Set('action reset', nil)
+	local reset = self:Get('reset') or {}
+	for reset_state, reset_value in pairs(reset) do
+		if reset_state == name and reset_value == value then
+			self:Set('reset', {})
+			break
 		end
 	end
 
@@ -125,32 +125,14 @@ end -- Dequeue
 
 --- Parse the queue.
 -- Go through the queue and, if no illusions have been found, change the states
--- to their associated values. If the 'action reset' state holds an action now,
--- then we toggle all the states which would have been affected by that action.
+-- to their associated values. Also reset all states still marked by now.
 function Parse(self)
-	local action_reset = self:Get('action reset')
-	if action_reset then
-		for state_name, state_entry in pairs(self.states) do
-			local actions
-			if state_entry.status then
-				actions = state_entry.disable_actions or {}
-			else
-				actions = state_entry.enable_actions or {}
-			end
-
-			for _, action_entry in pairs(actions) do
-				if string.match(action_entry, action_reset) then
-					if state_entry.status then
-						self.queue[state_name] = false
-					else
-						self.queue[state_name] = true
-					end
-				end
-			end
-		end
-	end
-
 	if not protea:Illusion() then
+		local reset = self:Get('reset') or {}
+		for reset_state, reset_value in pairs(reset) do
+			self:Set(reset_state, reset_value)
+		end
+
 		for name, value in pairs(self.queue) do
 			self:Set(name, value)
 		end
@@ -158,6 +140,35 @@ function Parse(self)
 
 	self.queue = {}
 end -- Parse()
+
+--- Mark states for resetting.
+-- Given an input command, finds all states that would be toggled from it and
+-- marks them for resetting.
+function Reset(self, input)
+	local reset = self:Get('reset') or {}
+
+	for state, state_entry in pairs(self.states) do
+		local actions
+		if state_entry.status then
+			actions = state_entry.disable_actions or {}
+		else
+			actions = state_entry.enable_actions or {}
+		end
+
+		local match = false
+		for _, action_entry in pairs(actions) do
+			if string.match(action_entry, input) then
+				match = true
+			end
+		end
+
+		if match then
+			reset[state] = not state_entry.status
+		end
+	end
+
+	self:SetTemporary('reset', reset)
+end -- ResetAction()
 
 
 
