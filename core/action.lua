@@ -40,12 +40,21 @@ function Get(self, name)
 
 	for _, action_entry in pairs(self.actions) do
 		local match = false
+
 		for _, pattern in pairs(action_entry.patterns) do
 			if string.match(name, pattern) then
 				match = true
 				break
 			end
 		end
+
+		for _, pattern in pairs(action_entry.patterns_exclude or {}) do
+			if string.match(name, pattern) then
+				match = false
+				break
+			end
+		end
+
 		if match then
 			for action_property, properties in pairs(action_entry) do
 				action[action_property] = action[action_property] or {}
@@ -64,7 +73,7 @@ function Validate(self, name)
 	local action = self:Get(name)
 
 	if not next(action) then
-		return false
+		return true
 	end
 
 	for _, state_hinder in pairs(action.state_hinders or {}) do
