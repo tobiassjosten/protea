@@ -34,7 +34,7 @@ function SetUp()
 	protea:EnvironmentReset()
 	modules_queue = protea.modules_queue
 	test_core_variable = nil
-	states = table.clone(state.states)
+	state_states = table.clone(state.states)
 	state.states['affliction1'] = {
 		status = false,
 		setting = false,
@@ -46,7 +46,7 @@ function TearDown()
 	protea:EnvironmentReset()
 	protea.modules_queue = modules_queue
 	test_core_variable = nil
-	state.states = states
+	state.states = state_states
 end
 
 function TestModulesExistance()
@@ -106,12 +106,12 @@ end
 module('protea.core.testevent', lunit.testcase, package.seeall)
 
 function SetUp()
-	listeners = table.clone(event.listeners)
+	event_listeners = table.clone(event.listeners)
 	test_event_variable = nil
 end
 
 function TearDown()
-	event.listeners = listeners
+	event.listeners = event_listeners
 	test_event_variable = nil
 end
 
@@ -153,13 +153,13 @@ end
 module('protea.core.testatcp', lunit.testcase, package.seeall)
 
 function SetUp()
-	listeners = table.clone(event.listeners)
+	event_listeners = table.clone(event.listeners)
 	test_atcp_variable = nil
 	adapter.sendpkt_variable = nil
 end
 
 function TearDown()
-	event.listeners = listeners
+	event.listeners = event_listeners
 	test_atcp_variable = nil
 	adapter.sendpkt_variable = nil
 end
@@ -230,12 +230,12 @@ end
 module('protea.core.testtrigger', lunit.testcase, package.seeall)
 
 function SetUp()
-	triggers = table.clone(trigger.triggers)
+	trigger_triggers = table.clone(trigger.triggers)
 	test_trigger_variable = nil
 end
 
 function TearDown()
-	trigger.triggers = triggers
+	trigger.triggers = trigger_triggers
 	test_trigger_variable = nil
 end
 
@@ -289,16 +289,18 @@ end
 module('protea.core.testcommand', lunit.testcase, package.seeall)
 
 function SetUp()
-	sent = table.clone(command.sent)
-	queue = table.clone(command.queue)
+	command_sent = table.clone(command.sent)
+	command_sent = {}
+	command_queue = table.clone(command.queue)
+	command.queue = {}
 	test_command_variable = nil
 	adapter.send_variable = nil
 	state:Set('illusion', false)
 end
 
 function TearDown()
-	command.sent = sent
-	command.queue = queue
+	command.sent = command_sent
+	command.queue = command_queue
 	test_command_variable = nil
 	adapter.send_variable = nil
 	state:Set('illusion', false)
@@ -390,7 +392,7 @@ end
 module('protea.core.teststate', lunit.testcase, package.seeall)
 
 function SetUp()
-	states = table.clone(state.states)
+	state_states = table.clone(state.states)
 	state.states['affliction1'] = {
 		status = false,
 		setting = false,
@@ -401,13 +403,13 @@ function SetUp()
 		setting = false,
 		disable_actions = { 'cure2' },
 	}
-	listeners = table.clone(event.listeners)
+	event_listeners = table.clone(event.listeners)
 	test_state_variable = nil
 end
 
 function TearDown()
-	state.states = states
-	listeners = table.clone(event.listeners)
+	state.states = state_states
+	event.listeners = event_listeners
 	test_state_variable = nil
 end
 
@@ -506,15 +508,15 @@ end
 module('protea.core.testaction', lunit.testcase, package.seeall)
 
 function SetUp()
-	actions = table.clone(action.actions)
-	queue = table.clone(command.queue)
-	states = table.clone(state.states)
+	action_actions = table.clone(action.actions)
+	command_queue = table.clone(command.queue)
+	state_states = table.clone(state.states)
 end
 
 function TearDown()
-	action.actions = actions
-	command.queue = queue
-	state.states = states
+	action.actions = action_actions
+	command.queue = command_queue
+	state.states = state_states
 end
 
 function TestActionCheck()
@@ -568,11 +570,11 @@ sample_map =
 }
 
 function SetUp()
-	map = table.clone(geo.map)
+	geo_map = table.clone(geo.map)
 end
 
 function TearDown()
-	geo.map = map
+	geo.map = geo_map
 end
 
 function TestGeoSetGet()
