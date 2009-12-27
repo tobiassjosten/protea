@@ -95,7 +95,7 @@ function Validate(self, name)
 	end
 
 	for _, command_hinder in pairs(action.command_hinders or {}) do
-		if command:Get(command_hinder) or command:TransactionGet(command_hinder) then
+		if command:Get(command_hinder) or command:QueueGet(command_hinder) then
 			return false
 		end
 	end
