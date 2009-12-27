@@ -57,6 +57,7 @@ function Parse(self, source, chunk)
 			if #chunk >= trigger.lines - 1 + line then
 				local chunk = table.concat(chunk, '\n', line, trigger.lines - 1 + line)
 				chunk = string.gsub(chunk, '\27%[.-m', '')
+				chunk = string.gsub(chunk, '\13', '')
 				local match = { string.match(chunk, trigger.pattern) }
 				if #match > 0 then
 					matched = true
