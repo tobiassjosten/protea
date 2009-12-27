@@ -20,7 +20,10 @@ module(...)
 
 actions =
 {
-	['.+'] = {
+	-- Pause state stops all actions but 'pause'
+	{
+		patterns = { '.+' },
+		patterns_exclude = { '^pause$' },
 		state_hinders = { 'pause' },
 	},
 }
@@ -35,8 +38,15 @@ actions =
 function Get(self, name)
 	local action = {}
 
-	for action_name, action_entry in pairs(self.actions) do
-		if string.match(name, action_name) then
+	for _, action_entry in pairs(self.actions) do
+		local match = false
+		for _, pattern in pairs(action_entry.patterns) do
+			if string.match(name, pattern) then
+				match = true
+				break
+			end
+		end
+		if match then
 			for action_property, properties in pairs(action_entry) do
 				action[action_property] = action[action_property] or {}
 				for _, property in pairs(properties) do
