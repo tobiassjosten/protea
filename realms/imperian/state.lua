@@ -102,7 +102,7 @@ trigger:Add('server', '^The toadstool slides down without effect%.$', function()
 -- Tree
 trigger:Add('server', '^You touch the tree of life tattoo%.$', function() state:Queue('tree balance', false) end)
 trigger:Add('server', '^Your senses return in a rush%.$', function() if state:Get('blackout') and command:Get('touch tree') then state:Queue('tree balance', false) end end)
-trigger:Add('server', { '^Your tree of life tattoo glows faintly for a moment then fades, leaving you ?\nunchanged%.$', 2 }, function() state:Queue('tree balance', false) end)
+trigger:Add('server', '^Your tree of life tattoo glows faintly for a moment then fades, leaving you ?\nunchanged%.$', 2, function() state:Queue('tree balance', false) end)
 event:Listen('state tree balance false', function() if state:Get('tree balance') then protea:TimerAdd(10, function() state:Set('tree balance', true) end, 'state_tree_balance_reset') end end)
 
 -- Purge balance
@@ -117,7 +117,7 @@ trigger:Add('server', '^Your mind is able to focus once again%.$', function() st
 
 -- Reserve balance
 trigger:Add('server', '^You feel invigorated as your wounds heal before your eyes%.$', function() state:Queue('reserve balance', false) end)
-trigger:Add('server', { '^You close your eyes and are bolstered with power as you feel your mind ?\nrefreshed%.$', 2 }, function() state:Queue('reserve balance', false) end)
+trigger:Add('server', '^You close your eyes and are bolstered with power as you feel your mind ?\nrefreshed%.$', 2, function() state:Queue('reserve balance', false) end)
 trigger:Add('server', '^Your limbs fill with strength as your endurance is replenished%.$', function() state:Queue('reserve balance', false) end)
 trigger:Add('server', '^You take a deep breath and relax your mind, filling it with mental strength%.$', function() state:Queue('reserve balance', false) end)
 trigger:Add('server', '^You are not yet able to do that again%.$', function() state:Queue('reserve balance', false) end)

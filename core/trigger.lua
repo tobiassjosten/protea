@@ -71,11 +71,18 @@ function Parse(self, source, chunk)
 end -- Parse()
 
 --- Add a trigger.
--- 
-function Add(self, source, pattern, callback, sequence)
-	local lines = (type(pattern) == 'table' and pattern[2] or 1)
-	local pattern = (type(pattern) == 'table' and pattern[1] or pattern)
-	local sequence = sequence or 0
+-- Constructs and appends the trigger to a source specific list. Please note
+-- that Protea triggers covers both what is normally known as "aliases" and
+-- "triggers"/"actions. In Protea they are 'client' and 'server' triggers.
+-- @param source Source to match from. Normally 'server' or 'client'.
+-- @param pattern String with Lua pattern to match text against.
+-- @param lines Number of lines to try and match.
+-- @param callback Function to execute on match. Recieves matches as parameter.
+-- @param sequence Determines the order to match triggers. Defaults to 0.
+function Add(self, source, pattern, lines, callback, sequence)
+	sequence = type(callback) == 'number' and callback or sequence or 0
+	callback = type(lines) == 'function' and lines or callback
+	lines = type(lines) == 'function' and 1 or lines
 
 	if not self.triggers[source] then
 		self.triggers[source] = {}

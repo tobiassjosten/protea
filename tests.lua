@@ -275,7 +275,7 @@ function TestTriggerMultilineParagraph()
 end
 
 function TestTriggerMultilinePattern()
-	trigger:Add('test suite', { '^one\ntwo$', 2 }, function() test_trigger_variable = true end)
+	trigger:Add('test suite', '^one\ntwo$', 2, function() test_trigger_variable = true end)
 	trigger:Parse('test suite', 'one\ntwo')
 	assert_true(test_trigger_variable, 'Multiline pattern trigger did not fire.')
 end
