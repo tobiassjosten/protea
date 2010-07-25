@@ -28,7 +28,9 @@ core_modules = {}
 
 --- Load a module.
 function LoadModule(self, module, realm)
-	local success, module_instance = pcall(require, 'core.' .. module:lower())
+	module = module:lower()
+
+	local success, module_instance = pcall(require, 'core.' .. module)
 	if not success then
 		return false
 	end
@@ -46,7 +48,7 @@ function LoadModule(self, module, realm)
 		self['modules'][module]      = module_instance
 	end
 
-	return true
+	return self['modules'][module]
 end
 
 --- Load a list of module.
@@ -54,4 +56,13 @@ function LoadModules(self, modules, realm)
 	for _, module in pairs(modules) do
 		self:LoadModule(module, realm)
 	end
+end
+
+--- Fetch a module.
+function GetModule(self, module)
+	if not self['modules'][module:lower()] then
+		self:LoadModule(module)
+	end
+
+	return self['modules'][module:lower()]
 end
