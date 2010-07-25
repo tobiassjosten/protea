@@ -25,6 +25,8 @@ listeners = {}
 --- Initialize module.
 function Initialize(self)
 	self.listeners = {}
+
+	return self
 end
 
 --- Raise an event.

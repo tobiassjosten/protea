@@ -1,25 +1,13 @@
 -- === === === === === === === === === === === === === === === === === === ====
--- TEST ADAPTER
--- === === === === === === === === === === === === === === === === === === ====
-
-adapter = {}
-
-function adapter:SendPkt(packet)
-	self.sendpkt_variable = packet
-end
-
-function adapter:Send(action)
-	self.send_variable = action
-end
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
 -- PROTEA TEST SUITE
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'core.init'
+
+local protea  = require 'core.init'
+local event   = protea:GetModule('event')
+
+local state = require 'core.state'
 
 
 
@@ -30,7 +18,9 @@ require 'core.init'
 module('protea.core.teststate', lunit.testcase, package.seeall)
 
 function SetUp()
-	state_states = table.clone(state.states)
+	event:Initialize()
+	state:Initialize(protea)
+
 	state.states['affliction1'] = {
 		status = false,
 		setting = false,
@@ -41,13 +31,7 @@ function SetUp()
 		setting = false,
 		disable_actions = { 'cure2' },
 	}
-	event_listeners = table.clone(event.listeners)
-	test_state_variable = nil
-end
 
-function TearDown()
-	state.states = state_states
-	event.listeners = event_listeners
 	test_state_variable = nil
 end
 

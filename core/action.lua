@@ -2,38 +2,40 @@
 -- ACTION MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-local command = command
 local ipairs = ipairs
-local next = next
-local pairs = pairs
-local state = state
-local string =
-{
-	match = string.match,
-}
-local table =
-{
-	insert = table.insert,
-}
+local next   = next
+local pairs  = pairs
+local protea = protea
+local string = string
+local table  = table
 
 package.loaded[...] = {}
 module(...)
 
-actions =
-{
-	-- Pause state stops all actions but 'pause'
-	{
-		patterns = { '.+' },
-		patterns_exclude = { '^pause$' },
-		state_hinders = { 'pause' },
-	},
-}
+actions = {}
 
 
 
 -- === === === === === === === === === === === === === === === === === === ====
 -- ACTION METHODS
 -- === === === === === === === === === === === === === === === === === === ====
+
+--- Initialize module.
+function Initialize(self, protea)
+	command = protea:GetModule('command')
+	state = protea:GetModule('state')
+
+	self.actions =
+	{
+		{
+			patterns = { '.+' },
+			patterns_exclude = { '^pause$' },
+			state_hinders = { 'pause' },
+		},
+	}
+
+	return self
+end
 
 --- Aggregate an action.
 function Get(self, name)

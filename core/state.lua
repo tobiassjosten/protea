@@ -2,34 +2,38 @@
 -- STATE MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-local command = command
-local event = event
 local ipairs = ipairs
-local pairs = pairs
-local protea = protea
-local string =
-{
-	match = string.match,
-}
-local table =
-{
-	insert = table.insert,
-}
-local type = type
+local pairs  = pairs
+local string = string
+local table  = table
+local type   = type
 
 package.loaded[...] = {}
 module(...)
 
-states = {}
-timed = {}
+states    = {}
+timed     = {}
 temporary = {}
-queue = {}
+queue     = {}
 
 
 
 -- === === === === === === === === === === === === === === === === === === ====
 -- STATE METHODS
 -- === === === === === === === === === === === === === === === === === === ====
+
+--- Initialize module.
+function Initialize(self, protea)
+	command = protea:GetModule('command')
+	event   = protea:GetModule('event')
+
+	self.states    = {}
+	self.timed     = {}
+	self.temporary = {}
+	self.queue     = {}
+
+	return self
+end
 
 --- Set state status.
 -- This sets an attribute of a given state and defaults to setting the 'status'
@@ -128,7 +132,7 @@ end -- Dequeue
 -- Go through the queue and, if no illusions have been found, change the states
 -- to their associated values. Also reset all states still marked by now.
 function Parse(self)
-	if not protea:Illusion() then
+	if not self:Get('illusion') then
 		local reset = self:Get('reset') or {}
 		for reset_state, reset_value in pairs(reset) do
 			self:Set(reset_state, reset_value)

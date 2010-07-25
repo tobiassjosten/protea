@@ -3,7 +3,12 @@
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'core.init'
+
+local protea  = require 'core.init'
+local command = protea:GetModule('command')
+local state   = protea:GetModule('state')
+
+local action = require 'core.action'
 
 
 
@@ -14,15 +19,9 @@ require 'core.init'
 module('protea.core.testaction', lunit.testcase, package.seeall)
 
 function SetUp()
-	action_actions = table.clone(action.actions)
-	command_queue = table.clone(command.queue)
-	state_states = table.clone(state.states)
-end
-
-function TearDown()
-	action.actions = action_actions
-	command.queue = command_queue
-	state.states = state_states
+	action:Initialize(protea)
+	command:Initialize(protea)
+	state:Initialize(protea)
 end
 
 function TestActionCheck()

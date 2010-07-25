@@ -2,29 +2,20 @@
 -- COMMAND MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-local adapter = adapter
-local event = event
-local ipairs = ipairs
-local protea = protea
-local string =
-{
-	match = string.match,
-}
-local table =
-{
-	insert = table.insert,
-	remove = table.remove,
-	concat = table.concat,
-}
+local ipairs   = ipairs
+local string   = string
+local table    = table
 local tostring = tostring
-local type = type
+local type     = type
+
+local print=print
 
 package.loaded[...] = {}
 module(...)
 
-sent = {}
+sent    = {}
 history = {}
-queue = {}
+queue   = {}
 
 
 
@@ -32,11 +23,23 @@ queue = {}
 -- COMMAND METHODS
 -- === === === === === === === === === === === === === === === === === === ====
 
+--- Initialize module.
+function Initialize(self, protea)
+	event  = protea:GetModule('event')
+	state  = protea:GetModule('state')
+
+	self.sent    = {}
+	self.history = {}
+	self.queue   = {}
+
+	return self
+end
+
 --- Send a command.
 -- 
 function Send(self, command)
 	table.insert(self.sent, { command = command, ticks = 3 })
-	adapter:Send(command)
+	protea:Send(command)
 	event:Raise('command', { name = 'send', value = command })
 end -- Send()
 
@@ -134,13 +137,13 @@ function Success(self, commands)
 	end
 
 	-- No command was found, so we obviously have an illusion
-	protea:Illusion('Command(s) have not been sent: ' .. tostring(table.concat(input, ', ')))
+	event:Raise('illusion', { message = 'Command(s) have not been sent: ' .. tostring(table.concat(input, ', ')) })
 end -- Success()
 
 --- Reset successful commands.
 -- 
 function Succeed(self)
-	if protea:Illusion() then
+	if state:Get('illusion') then
 		self.success_sent = nil
 		self.success_history = nil
 		return

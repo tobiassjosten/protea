@@ -1,25 +1,17 @@
 -- === === === === === === === === === === === === === === === === === === ====
--- TEST ADAPTER
--- === === === === === === === === === === === === === === === === === === ====
-
-adapter = {}
-
-function adapter:SendPkt(packet)
-	self.sendpkt_variable = packet
-end
-
-function adapter:Send(action)
-	self.send_variable = action
-end
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
 -- PROTEA TEST SUITE
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'core.init'
+
+local protea = require 'core.init'
+local event  = protea:GetModule('event')
+
+protea.Send = function(self, command)
+	send_variable = command
+end
+
+local command = require 'core.command'
 
 
 
@@ -30,26 +22,13 @@ require 'core.init'
 module('protea.core.testcommand', lunit.testcase, package.seeall)
 
 function SetUp()
-	command_sent = table.clone(command.sent)
-	command_sent = {}
-	command_queue = table.clone(command.queue)
-	command.queue = {}
-	test_command_variable = nil
-	adapter.send_variable = nil
-	state:Set('illusion', false)
-end
-
-function TearDown()
-	command.sent = command_sent
-	command.queue = command_queue
-	test_command_variable = nil
-	adapter.send_variable = nil
-	state:Set('illusion', false)
+	send_variable = nil
+	command:Initialize(protea)
 end
 
 function TestCommandSend()
 	command:Send('test')
-	assert_equal('test', adapter.send_variable, 'Command was not sent.')
+	assert_equal('test', send_variable, 'Command was not sent.')
 end
 
 function TestCommandEvent()
@@ -107,7 +86,7 @@ end
 function TestCommandQueueSend()
 	command:Queue('test')
 	command:QueueSend()
-	assert_equal('test', adapter.send_variable, 'Command in queue was not sent.')
+	assert_equal('test', send_variable, 'Command in queue was not sent.')
 end
 
 function TestCommandQueueSendOrder()
@@ -115,7 +94,7 @@ function TestCommandQueueSendOrder()
 	command:Queue('b')
 	command:Queue('c')
 	command:QueueSend()
-	assert_equal('c', adapter.send_variable, 'Commands in queue were not sent in correct order.')
+	assert_equal('c', send_variable, 'Commands in queue were not sent in correct order.')
 end
 
 function TestCommandQueueFlush()

@@ -48,6 +48,12 @@ function LoadModule(self, module, realm)
 		self['modules'][module]      = module_instance
 	end
 
+	self['modules'][module].protea = self
+
+	if self['modules'][module].Initialize then
+		self['modules'][module]:Initialize(self)
+	end
+
 	return self['modules'][module]
 end
 
@@ -66,3 +72,7 @@ function GetModule(self, module)
 
 	return self['modules'][module:lower()]
 end
+
+--- Send data to the game.
+-- Replace this in your adapter so it uses the client's native send function.
+function Send(self, command) end
