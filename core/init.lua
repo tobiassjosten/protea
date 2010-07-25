@@ -2,13 +2,13 @@
 -- PROTEA CORE
 -- === === === === === === === === === === === === === === === === === === ====
 
-local pairs = pairs
-local pcall = pcall
-local print = print
+local pairs   = pairs
+local pcall   = pcall
+local print   = print
 local require = require
-local type = type
-local string = string
-local table = table
+local type    = type
+local string  = string
+local table   = table
 
 --- Set metatable for Protea.
 function ProteaMetatable(module)
@@ -46,7 +46,7 @@ function LoadModule(self, module, realm)
 
 	if type(module_instance) == 'table' then
 		self['core_modules'][module] = self[module]
-		self['modules'][module] = module_instance
+		self['modules'][module]      = module_instance
 	end
 
 	return true
