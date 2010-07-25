@@ -4,9 +4,9 @@
 
 require 'lunit'
 
-local protea  = require 'core.init'
-local event   = protea:GetModule('event')
-local state   = protea:GetModule('state')
+local protea = require 'core.init'
+local event  = protea:GetModule('event')
+local state  = protea:GetModule('state')
 
 
 
