@@ -30,6 +30,7 @@ local table =
 }
 local tostring = tostring
 
+package.loaded[...] = {}
 module(...)
 
 -- Telnet escape codes

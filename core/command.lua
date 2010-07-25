@@ -19,6 +19,7 @@ local table =
 local tostring = tostring
 local type = type
 
+package.loaded[...] = {}
 module(...)
 
 sent = {}

@@ -7,6 +7,7 @@ local event = event
 local state = state
 local trigger = trigger
 
+package.loaded[...] = {}
 module(...)
 
 states = state.states

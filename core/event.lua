@@ -11,6 +11,7 @@ local table =
 }
 local type = type
 
+package.loaded[...] = {}
 module(...)
 
 listeners = {}

@@ -19,6 +19,7 @@ local tonumber = tonumber
 local tostring = tostring
 local type = type
 
+package.loaded[...] = {}
 module(...)
 
 map = {}

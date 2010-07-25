@@ -16,6 +16,7 @@ local table =
 	insert = table.insert,
 }
 
+package.loaded[...] = {}
 module(...)
 
 actions =
