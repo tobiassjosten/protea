@@ -16,7 +16,7 @@ local type         = type
 package.loaded[...] = {}
 module(...)
 
-map = {}
+map   = {}
 rooms = {}
 
 

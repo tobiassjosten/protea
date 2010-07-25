@@ -3,13 +3,9 @@
 -- === === === === === === === === === === === === === === === === === === ====
 
 local ipairs = ipairs
-local pairs = pairs
-local table =
-{
-	insert = table.insert,
-	sort = table.sort,
-}
-local type = type
+local pairs  = pairs
+local table  = table
+local type   = type
 
 package.loaded[...] = {}
 module(...)

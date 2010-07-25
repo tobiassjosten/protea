@@ -1,25 +1,16 @@
 -- === === === === === === === === === === === === === === === === === === ====
--- TEST ADAPTER
--- === === === === === === === === === === === === === === === === === === ====
-
-adapter = {}
-
-function adapter:SendPkt(packet)
-	self.sendpkt_variable = packet
-end
-
-function adapter:Send(action)
-	self.send_variable = action
-end
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
 -- PROTEA TEST SUITE
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'core.init'
+
+local protea = require 'core.init'
+local atcp   = protea:GetModule('atcp')
+local event  = protea:GetModule('event')
+
+protea.SendPkt = function(self, command)
+	sendpkt_variable = command
+end
 
 
 
@@ -30,20 +21,16 @@ require 'core.init'
 module('protea.core.testatcp', lunit.testcase, package.seeall)
 
 function SetUp()
-	event_listeners = table.clone(event.listeners)
+	atcp:Initialize(protea)
+	event:Initialize(protea)
+
 	test_atcp_variable = nil
-	adapter.sendpkt_variable = nil
+	sendpkt_variable = nil
 end
 
-function TearDown()
-	event.listeners = event_listeners
-	test_atcp_variable = nil
-	adapter.sendpkt_variable = nil
-end
-
-function TestATCPInitialization()
-	atcp:Initialize()
-	assert_match('^\255\253\200\255\250\200.+\255\240$', adapter.sendpkt_variable, 'Invalid initialization string.')
+function TestATCPNegotiation()
+	atcp:Negotiate()
+	assert_match('^\255\253\200\255\250\200.+\255\240$', sendpkt_variable, 'Invalid initialization string.')
 end
 
 function TestATCPAuthentication()
@@ -95,5 +82,5 @@ end
 
 function TestATCPParseAuthChallenge()
 	atcp:Parse('\255\250\200Auth.Request CH ygvhnqpakyzubgiejmrc\255\240')
-	assert_match('^\255\250\200auth 1083 Protea .+\255\240$', adapter.sendpkt_variable, 'Authentication challenge was not met.')
+	assert_match('^\255\250\200auth 1083 Protea.*\255\240$', sendpkt_variable, 'Authentication challenge was not met.')
 end

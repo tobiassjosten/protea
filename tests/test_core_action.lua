@@ -5,10 +5,9 @@
 require 'lunit'
 
 local protea  = require 'core.init'
+local action  = protea:GetModule('action')
 local command = protea:GetModule('command')
 local state   = protea:GetModule('state')
-
-local action = require 'core.action'
 
 
 

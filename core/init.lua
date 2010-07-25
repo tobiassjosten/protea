@@ -74,5 +74,9 @@ function GetModule(self, module)
 end
 
 --- Send data to the game.
--- Replace this in your adapter so it uses the client's native send function.
+-- Replace this in your adapter so it uses the client's native function.
 function Send(self, command) end
+
+--- Send TCP packets to the game.
+-- Replace this in your adapter so it uses the client's native function.
+function SendPkt(self, command) end

@@ -6,8 +6,7 @@ require 'lunit'
 
 local protea  = require 'core.init'
 local event   = protea:GetModule('event')
-
-local state = require 'core.state'
+local state   = protea:GetModule('state')
 
 
 

@@ -3,7 +3,8 @@
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-geo = require 'core.geo'
+local protea = require 'core.init'
+local geo    = protea:GetModule('geo')
 
 
 

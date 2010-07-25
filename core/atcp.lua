@@ -2,36 +2,18 @@
 -- ATCP MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-local adapter = adapter
-local bit =
-{
-	bor = bit.bor,
-}
-local event = event
-local ipairs = ipairs
-local math =
-{
-	fmod = math.fmod,
-}
-local pairs = pairs
-local protea = protea
-local string =
-{
-	byte = string.byte,
-	find = string.find,
-	gmatch = string.gmatch,
-	gsub = string.gsub,
-	sub = string.sub,
-}
-local table =
-{
-	insert = table.insert,
-	concat = table.concat,
-}
+local ipairs   = ipairs
+local math     = math
+local pairs    = pairs
+local require  = require
+local string   = string
+local table    = table
 local tostring = tostring
 
 package.loaded[...] = {}
 module(...)
+
+bit = require 'library.bit'
 
 -- Telnet escape codes
 EOR = '\025'
@@ -57,7 +39,7 @@ IAC_WILL_EOR = IAC .. WILL .. EOR
 IAC_WONT_EOR = IAC .. WONT.. EOR
 IAC_GA = IAC .. GA
 
-client = 'Protea ' .. protea.version
+client = 'Protea'
 
 -- Initialization options
 options =
@@ -84,16 +66,23 @@ options =
 -- ATCP METHODS
 -- === === === === === === === === === === === === === === === === === === ====
 
+--- Initialize module.
+function Initialize(self, protea)
+	event  = protea:GetModule('event')
+
+	return self
+end
+
 --- Initialize ATCP negotiations.
 -- 
-function Initialize(self)
+function Negotiate(self)
 	local options = {}
 	for _, option in ipairs(self.options) do
 		table.insert(options, option.key .. ' ' .. option.value)
 	end
 	options = table.concat(options, '\10')
 
-	adapter:SendPkt(self.IAC_DO_ATCP .. self.IAC_SB_ATCP .. options .. self.IAC_SE)
+	protea:SendPkt(self.IAC_DO_ATCP .. self.IAC_SB_ATCP .. options .. self.IAC_SE)
 end -- Initialize()
 
 --- ATCP authentication.
@@ -105,9 +94,9 @@ function Auth(self, seed)
 		n = letter:byte() - 96
 
 		if math.fmod(i, 2) == 0 then
-			answer = answer + n * (bit.bor(i, 13))
+			answer = answer + n * (bit:bor(i, 13))
 		else
-			answer = answer - n * (bit.bor(i, 11))
+			answer = answer - n * (bit:bor(i, 11))
 		end
 
 		i = i + 1
@@ -137,7 +126,7 @@ function Parse(self, packet)
 
 	if (values['Auth.Request']) then
 		local auth = self:Auth(string.sub(values['Auth.Request'], 4))
-		adapter:SendPkt(self.IAC_SB_ATCP .. 'auth ' .. tostring(auth) .. ' ' .. self.client .. self.IAC_SE)
+		protea:SendPkt(self.IAC_SB_ATCP .. 'auth ' .. tostring(auth) .. ' ' .. self.client .. self.IAC_SE)
 	end
 
 	return packet

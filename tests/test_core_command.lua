@@ -4,14 +4,13 @@
 
 require 'lunit'
 
-local protea = require 'core.init'
-local event  = protea:GetModule('event')
+local protea  = require 'core.init'
+local command = protea:GetModule('command')
+local event   = protea:GetModule('event')
 
 protea.Send = function(self, command)
 	send_variable = command
 end
-
-local command = require 'core.command'
 
 
 

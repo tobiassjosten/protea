@@ -3,7 +3,8 @@
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-local event = require 'core.event'
+local protea = require 'core.init'
+local event  = protea:GetModule('event')
 
 
 
