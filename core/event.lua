@@ -22,6 +22,11 @@ listeners = {}
 -- EVENT METHODS
 -- === === === === === === === === === === === === === === === === === === ====
 
+--- Initialize module.
+function Initialize(self)
+	self.listeners = {}
+end
+
 --- Raise an event.
 -- 
 function Raise(self, name, parameters)

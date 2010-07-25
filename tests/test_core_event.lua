@@ -1,25 +1,9 @@
 -- === === === === === === === === === === === === === === === === === === ====
--- TEST ADAPTER
--- === === === === === === === === === === === === === === === === === === ====
-
-adapter = {}
-
-function adapter:SendPkt(packet)
-	self.sendpkt_variable = packet
-end
-
-function adapter:Send(action)
-	self.send_variable = action
-end
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
 -- PROTEA TEST SUITE
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'core.init'
+local event = require 'core.event'
 
 
 
@@ -30,12 +14,11 @@ require 'core.init'
 module('protea.core.testevent', lunit.testcase, package.seeall)
 
 function SetUp()
-	event_listeners = table.clone(event.listeners)
+	event:Initialize()
 	test_event_variable = nil
 end
 
 function TearDown()
-	event.listeners = event_listeners
 	test_event_variable = nil
 end
 
