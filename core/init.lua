@@ -22,9 +22,6 @@ end
 package.loaded[...] = {}
 module(..., ProteaMetatable)
 
-require 'library.extras'
-require 'library.bit'
-
 version      = '0.1-alpha'
 modules      = {}
 core_modules = {}
