@@ -25,6 +25,14 @@ rooms = {}
 -- MAP METHODS
 -- === === === === === === === === === === === === === === === === === === ====
 
+--- Initialize module.
+function Initialize(self, protea)
+	self.map   = {}
+	self.rooms = {}
+
+	return self
+end
+
 -- Load map.
 function Load(self, map)
 	self.map = map
