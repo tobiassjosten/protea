@@ -2,124 +2,59 @@
 -- PROTEA CORE
 -- === === === === === === === === === === === === === === === === === === ====
 
-protea =
-{
-	version = '0.1-alpha',
-	environment = {},
-	modules = {},
-  modules_queue = {},
-}
+local pairs = pairs
+local pcall = pcall
+local print = print
+local require = require
+local type = type
+local string = string
+local table = table
+
+--- Set metatable for Protea.
+function ProteaMetatable(module)
+  setmetatable(module, {
+		__index = function(i,k)
+			return i.modules[k]
+		end
+	})
+end
+
+package.loaded[...] = {}
+module(..., ProteaMetatable)
 
 require 'library.extras'
 require 'library.bit'
 
+version      = '0.1-alpha'
+modules      = {}
+core_modules = {}
 
-
--- === === === === === === === === === === === === === === === === === === ====
--- EXTEND PROTEA MODULE
--- === === === === === === === === === === === === === === === === === === ====
-
---- Illusion handler.
-function protea:Illusion(message)
-	if message then
-		if type(message) ~= 'string' then
-			message = nil
-		end
-		event:Raise('illusion', { message = message })
-		state:SetTemporary('illusion', true)
-	elseif message == false then
-		state:SetTemporary('illusion', false)
-	end
-	return state:Get('illusion')
-end
-
-function protea:Environment(name, value)
-	if value ~= nil then
-		event:Raise('environment', { name = name, value = value })
-		self.environment[name] = value
+--- Load a module.
+function LoadModule(self, module, realm)
+	local success, module_instance = pcall(require, 'core.' .. module:lower())
+	if not success then
+		return false
 	end
 
-	return self.environment[name]
-end
+	self['modules'][module]      = module_instance
+	self['core_modules'][module] = module_instance
 
-function protea:EnvironmentReset()
-	self.environment = {}
-	protea:ModuleReset()
-end
-
-function protea:Actions()
-	local actions = {}
-	for _, action_entry in ipairs(state:Actions()) do
-		if action:Validate(action_entry) then
-			table.insert(actions, action_entry)
-		end
-	end
-	return actions
-end
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
--- MODULES
--- === === === === === === === === === === === === === === === === === === ====
-
-function protea:ModuleLoad(name, realm)
-	if not name and realm then
-		self:ModuleLoad('init', realm)
-		for _, module_name in ipairs(self.modules_queue) do
-			self:ModuleLoad(module_name, realm)
-		end
-		self.modules_queue = {}
-
-		return
-	end
-
-	local success, module_instance = pcall(require, (realm and ('realms.' .. realm) or 'core') .. '.' .. name)
+	local success, module_instance = pcall(require, 'realms.' .. (realm or 'nil') .. '.' .. module:lower())
 	if not success and not module_instance:match('^module \'.+\' not found:.+') then
-		print('ERROR: ' .. tostring(module_instance))
+		print('ERROR:', module_instance)
 	end
 
 	if type(module_instance) == 'table' then
-		if not realm then
-			_G[name] = module_instance
-		else
-			self.modules[name] = table.clone(_G[name])
-			for key, value in pairs(module_instance) do
-				if key:sub(1, 1) ~= '_' then
-					_G[name][key] = value
-				end
-			end
-		end
+		self['core_modules'][module] = self[module]
+		self['modules'][module] = module_instance
 	end
 
-	if not realm then
-		table.insert(self.modules_queue, name)
-	end
+	return true
 end
 
-function protea:ModuleReset()
-	for module_name, module_instance in pairs(self.modules) do
-		_G[module_name] = module_instance
+--- Load a list of module.
+function LoadModules(self, modules, realm)
+	for _, module in pairs(modules) do
+		self:LoadModule(module, realm)
 	end
 end
-
-protea:ModuleLoad('event')
-protea:ModuleLoad('atcp')
-protea:ModuleLoad('trigger')
-protea:ModuleLoad('command')
-protea:ModuleLoad('state')
-protea:ModuleLoad('action')
-protea:ModuleLoad('geo')
-
--- Load realm specific modules when realm is detected
-event:Listen('environment', function(parameters) protea:ModuleLoad(nil, parameters['value']) end, { name = 'realm' })
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
--- CLOSURE
--- === === === === === === === === === === === === === === === === === === ====
-
-protea:ModuleLoad('load')
-
-return protea
