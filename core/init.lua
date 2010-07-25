@@ -10,6 +10,9 @@ protea =
   modules_queue = {},
 }
 
+require 'library.extras'
+require 'library.bit'
+
 
 
 -- === === === === === === === === === === === === === === === === === === ====
