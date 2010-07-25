@@ -1,25 +1,9 @@
 -- === === === === === === === === === === === === === === === === === === ====
--- TEST ADAPTER
--- === === === === === === === === === === === === === === === === === === ====
-
-adapter = {}
-
-function adapter:SendPkt(packet)
-	self.sendpkt_variable = packet
-end
-
-function adapter:Send(action)
-	self.send_variable = action
-end
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
 -- PROTEA TEST SUITE
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'core.init'
+geo = require 'core.geo'
 
 
 
@@ -56,11 +40,7 @@ sample_map =
 }
 
 function SetUp()
-	geo_map = table.clone(geo.map)
-end
-
-function TearDown()
-	geo.map = geo_map
+	geo_map = nil
 end
 
 function TestGeoSetGet()

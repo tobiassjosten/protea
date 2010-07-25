@@ -2,22 +2,16 @@
 -- MAP MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-local pairs = pairs
-local ipairs = ipairs
-local rawget = rawget
+local pairs        = pairs
+local ipairs       = ipairs
+local rawget       = rawget
+local require      = require
 local setmetatable = setmetatable
-local string =
-{
-	match = string.match,
-}
-local table =
-{
-	insert = table.insert,
-	remove = table.remove,
-}
-local tonumber = tonumber
-local tostring = tostring
-local type = type
+local string       = string
+local table        = table
+local tonumber     = tonumber
+local tostring     = tostring
+local type         = type
 
 package.loaded[...] = {}
 module(...)
