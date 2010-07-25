@@ -18,14 +18,14 @@ How to use:
  bit.brshift(n, bits) -- right shift (n >> bits)
  bit.blshift(n, bits) -- left shift (n << bits)
  bit.blogic_rshift(n, bits) -- logic right shift(zero fill >>>)
- 
+
 Please note that bit.brshift and bit.blshift only support number within
 32 bits.
 
 2 utility functions are provided too:
  bit.tobits(n) -- convert n into a bit table(which is a 1/0 sequence)
                -- high bits first
- bit.tonumb(bit_tbl) -- convert a bit table into a number 
+ bit.tonumb(bit_tbl) -- convert a bit table into a number
 -------------------
 
 Under the MIT license.
@@ -33,23 +33,27 @@ Under the MIT license.
 copyright(c) 2006~2007 hanzhao (abrash_han@hotmail.com)
 --]]---------------
 
-do
+local math  = math
+local table = table
+
+package.loaded[...] = {}
+module(...)
 
 ------------------------
 -- bit lib implementions
 
-local function check_int(n)
+function check_int(self, n)
  -- checking not float
  if(n - math.floor(n) > 0) then
   error("trying to use bitwise operation on non-integer!")
  end
 end
 
-local function to_bits(n)
- check_int(n)
+function tobits(self, n)
+ self:check_int(n)
  if(n < 0) then
   -- negative
-  return to_bits(bit.bnot(math.abs(n)) + 1)
+  return self:tobits(bit.bnot(math.abs(n)) + 1)
  end
  -- to bits table
  local tbl = {}
@@ -68,7 +72,7 @@ local function to_bits(n)
  return tbl
 end
 
-local function tbl_to_number(tbl)
+function tonumb(self, tbl)
  local n = table.getn(tbl)
 
  local rslt = 0
@@ -77,11 +81,11 @@ local function tbl_to_number(tbl)
   rslt = rslt + tbl[i]*power
   power = power*2
  end
- 
+
  return rslt
 end
 
-local function expand(tbl_m, tbl_n)
+function expand(self, tbl_m, tbl_n)
  local big = {}
  local small = {}
  if(table.getn(tbl_m) > table.getn(tbl_n)) then
@@ -98,10 +102,10 @@ local function expand(tbl_m, tbl_n)
 
 end
 
-local function bit_or(m, n)
- local tbl_m = to_bits(m)
- local tbl_n = to_bits(n)
- expand(tbl_m, tbl_n)
+function bor(self, m, n)
+ local tbl_m = self:tobits(m)
+ local tbl_n = self:tobits(n)
+ self:expand(tbl_m, tbl_n)
 
  local tbl = {}
  local rslt = math.max(table.getn(tbl_m), table.getn(tbl_n))
@@ -112,14 +116,14 @@ local function bit_or(m, n)
    tbl[i] = 1
   end
  end
- 
- return tbl_to_number(tbl)
+
+ return self:tonumb(tbl)
 end
 
-local function bit_and(m, n)
- local tbl_m = to_bits(m)
- local tbl_n = to_bits(n)
- expand(tbl_m, tbl_n) 
+function band(self, m, n)
+ local tbl_m = self:tobits(m)
+ local tbl_n = self:tobits(n)
+ self:expand(tbl_m, tbl_n)
 
  local tbl = {}
  local rslt = math.max(table.getn(tbl_m), table.getn(tbl_n))
@@ -131,27 +135,26 @@ local function bit_and(m, n)
   end
  end
 
- return tbl_to_number(tbl)
+ return self:tonumb(tbl)
 end
 
-local function bit_not(n)
- 
- local tbl = to_bits(n)
+function bnot(self, n)
+ local tbl = self:tobits(n)
  local size = math.max(table.getn(tbl), 32)
  for i = 1, size do
-  if(tbl[i] == 1) then 
+  if(tbl[i] == 1) then
    tbl[i] = 0
   else
    tbl[i] = 1
   end
  end
- return tbl_to_number(tbl)
+ return self:tonumb(tbl)
 end
 
-local function bit_xor(m, n)
- local tbl_m = to_bits(m)
- local tbl_n = to_bits(n)
- expand(tbl_m, tbl_n) 
+function bxor(self, m, n)
+ local tbl_m = self:tobits(m)
+ local tbl_n = self:tobits(n)
+ self:expand(tbl_m, tbl_n)
 
  local tbl = {}
  local rslt = math.max(table.getn(tbl_m), table.getn(tbl_n))
@@ -162,15 +165,15 @@ local function bit_xor(m, n)
    tbl[i] = 0
   end
  end
- 
+
  --table.foreach(tbl, print)
 
- return tbl_to_number(tbl)
+ return self:tonumb(tbl)
 end
 
-local function bit_rshift(n, bits)
- check_int(n)
- 
+function brshift(self, n, bits)
+ self:check_int(n)
+
  local high_bit = 0
  if(n < 0) then
   -- negative
@@ -186,11 +189,11 @@ local function bit_rshift(n, bits)
 end
 
 -- logic rightshift assures zero filling shift
-local function bit_logic_rshift(n, bits)
- check_int(n)
+function blogic_rshift(self, n, bits)
+ self:check_int(n)
  if(n < 0) then
   -- negative
-  n = bit_not(math.abs(n)) + 1
+  n = self:bit_not(math.abs(n)) + 1
  end
  for i=1, bits do
   n = n/2
@@ -198,67 +201,23 @@ local function bit_logic_rshift(n, bits)
  return math.floor(n)
 end
 
-local function bit_lshift(n, bits)
- check_int(n)
- 
+function blshift(self, n, bits)
+ self:check_int(n)
+
  if(n < 0) then
   -- negative
-  n = bit_not(math.abs(n)) + 1
+  n = self:bit_not(math.abs(n)) + 1
  end
 
  for i=1, bits do
   n = n*2
  end
- return bit_and(n, 4294967295) -- 0xFFFFFFFF
+ return self:bit_and(n, 4294967295) -- 0xFFFFFFFF
 end
 
-local function bit_xor2(m, n)
- local rhs = bit_or(bit_not(m), bit_not(n))
- local lhs = bit_or(m, n)
- local rslt = bit_and(lhs, rhs)
+function bxor2(self, m, n)
+ local rhs = self:bit_or(self:bit_not(m), self:bit_not(n))
+ local lhs = self:bit_or(m, n)
+ local rslt = self:bit_and(lhs, rhs)
  return rslt
 end
-
---------------------
--- bit lib interface
-
-bit = {
- -- bit operations
- bnot = bit_not,
- band = bit_and,
- bor  = bit_or,
- bxor = bit_xor,
- brshift = bit_rshift,
- blshift = bit_lshift,
- bxor2 = bit_xor2,
- blogic_rshift = bit_logic_rshift,
-
- -- utility func
- tobits = to_bits,
- tonumb = tbl_to_number,
-}
-
-end
-
---[[
-for i = 1, 100 do
- for j = 1, 100 do
-  if(bit.bxor(i, j) ~= bit.bxor2(i, j)) then
-   error("bit.xor failed.")
-  end
- end
-end
---]]
-
-
-
-
-
-
-
-
-
-
-
-
-
