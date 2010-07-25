@@ -1,25 +1,11 @@
 -- === === === === === === === === === === === === === === === === === === ====
--- TEST ADAPTER
--- === === === === === === === === === === === === === === === === === === ====
-
-adapter = {}
-
-function adapter:SendPkt(packet)
-	self.sendpkt_variable = packet
-end
-
-function adapter:Send(action)
-	self.send_variable = action
-end
-
-
-
--- === === === === === === === === === === === === === === === === === === ====
 -- PROTEA TEST SUITE
 -- === === === === === === === === === === === === === === === === === === ====
 
 require 'lunit'
-require 'core.init'
+
+local protea  = require 'core.init'
+local trigger = protea:GetModule('trigger')
 
 
 
@@ -30,12 +16,8 @@ require 'core.init'
 module('protea.core.testtrigger', lunit.testcase, package.seeall)
 
 function SetUp()
-	trigger_triggers = table.clone(trigger.triggers)
-	test_trigger_variable = nil
-end
+	trigger:Initialize()
 
-function TearDown()
-	trigger.triggers = trigger_triggers
 	test_trigger_variable = nil
 end
 

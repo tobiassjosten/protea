@@ -3,19 +3,9 @@
 -- === === === === === === === === === === === === === === === === === === ====
 
 local ipairs = ipairs
-local string =
-{
-	gmatch = string.gmatch,
-	gsub = string.gsub,
-	match = string.match,
-}
-local table =
-{
-	concat = table.concat,
-	insert = table.insert,
-	sort = table.sort,
-}
-local type = type
+local string = string
+local table  = table
+local type   = type
 
 package.loaded[...] = {}
 module(...)
@@ -27,6 +17,13 @@ triggers = {}
 -- === === === === === === === === === === === === === === === === === === ====
 -- TRIGGER METHODS
 -- === === === === === === === === === === === === === === === === === === ====
+
+--- Initialize module.
+function Initialize(self)
+	self.triggers = {}
+
+	return self
+end
 
 --- Parse chunk and look for trigger matches.
 -- 
