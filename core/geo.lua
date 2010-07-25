@@ -26,7 +26,7 @@ rooms = {}
 -- === === === === === === === === === === === === === === === === === === ====
 
 --- Initialize module.
-function Initialize(self, protea)
+function Initialize(self)
 	self.map   = {}
 	self.rooms = {}
 
