@@ -32,6 +32,8 @@ function LoadModule(self, module, realm)
 
 	local success, module_instance = pcall(require, 'core.' .. module)
 	if not success then
+		print('ERROR:', module_instance)
+
 		return false
 	end
 
