@@ -2,19 +2,137 @@
 -- STATE MODULE
 -- === === === === === === === === === === === === === === === === === === ====
 
-local ipairs = ipairs
-local pairs  = pairs
-local string = string
-local table  = table
-local type   = type
+local ipairs       = ipairs
+local pairs        = pairs
+local setmetatable = setmetatable
+local string       = string
+local table        = table
+local type         = type
 
 package.loaded[...] = {}
 module(...)
 
-states    = {}
-timed     = {}
-temporary = {}
-queue     = {}
+states = {}
+queue  = {}
+
+
+
+-- === === === === === === === === === === === === === === === === === === ====
+-- PROTOTYPE
+-- === === === === === === === === === === === === === === === === === === ====
+
+prototype = {}
+prototype_mt =
+{
+	__index = function(t, k)
+		return t.properties[k]
+	end,
+
+	__tostring = function(t)
+		return t.name
+	end,
+
+	__concat = function(a, b)
+		a = type(a) == 'table' and tostring(a) or a
+		b = type(b) == 'table' and tostring(b) or b
+		return a .. b
+	end,
+}
+
+--- Change state properties.
+-- Change properties of the state. If no property is specified then 'status'
+-- will be used.
+function prototype:Set(value, property)
+	property = property or 'status'
+
+	event:Raise('state', { name = self.name, property = property, value = value })
+
+	self.properties[property] = value
+
+	if self.timer and property == 'status' then
+		self:Set(nil, 'timer'):Set(nil, 'old_status')
+	end
+
+	if self.reset and property == 'status' then
+		for _, input1 in pairs(self.reset) do
+			for _, state in pairs(self.state.states) do
+				for _, input2 in pairs(state.reset or {}) do
+					if input1 == input2 then
+						state:Set(nil, 'reset')
+					end
+				end
+			end
+		end
+
+		self:Set(nil, 'reset')
+	end
+
+	return self
+end -- prototype:Set()
+
+--- Set timed status.
+function prototype:Timer(value, count)
+	self:Set(self.status, 'old_status'):Set(value):Set(count, 'timer')
+
+	return self
+end -- prototype:Timer()
+
+--- Set temporary status.
+function prototype:Temporary(value)
+	self:Set(self.status, 'old_status'):Set(value):Set(true, 'temporary')
+
+	return self
+end -- prototype:Temporary()
+
+--- Queue state.
+function prototype:Queue(value)
+	self:Set(value, 'queue')
+
+	if self.reset then
+		for _, input1 in pairs(self.reset) do
+			for _, state in pairs(self.state.states) do
+				for _, input2 in pairs(state.reset or {}) do
+					if input1 == input2 then
+						state:Set(nil, 'reset')
+					end
+				end
+			end
+		end
+
+		self:Set(nil, 'reset')
+	end
+
+	return self
+end -- Queue
+
+--- Remove state from the queue.
+function prototype:Dequeue()
+	self:Set(nil, 'queue')
+
+	return self
+end -- Dequeue
+
+--- State factory.
+function New(self, name, settings)
+	local state = {}
+
+	for key, value in pairs(prototype) do
+		state[key] = value
+	end
+
+	state.properties = {}
+	for key, value in pairs(settings or {}) do
+		state.properties[key] = value
+	end
+	state.properties['name'] = name
+
+	setmetatable(state, prototype_mt)
+
+	self['states'][name] = state
+	state.state = self
+
+	return state
+end -- New()
 
 
 
@@ -27,159 +145,133 @@ function Initialize(self, protea)
 	command = protea:GetModule('command')
 	event   = protea:GetModule('event')
 
-	self.states    = {}
-	self.timed     = {}
-	self.temporary = {}
-	self.queue     = {}
+	self.states = {}
+	self.queue  = {}
 
 	return self
 end
 
---- Set state status.
--- This sets an attribute of a given state and defaults to setting the 'status'
--- attribute. Setting a state to the status which it was marked for resetting
--- to clears all marked states.
-function Set(self, name, value, attribute)
-	attribute = attribute or 'status'
-	if not self.states[name] then
-		self.states[name] = { status = false }
-	end
+--- Get state status.
+function Get(self, name)
+	return self['states'][name]
+end -- Get()
 
-	if name ~= 'reset' and attribute == 'status' then
-		local reset = self:Get('reset') or {}
-		for reset_state, reset_value in pairs(reset) do
-			if reset_state == name and reset_value == value then
-				self:Set('reset', {})
-				break
+--- Invoke a tick for timed states.
+function TickTimers(self, count)
+	for _, state in pairs(self.states) do
+		if state.timer then
+			if state.timer > count then
+				state:Set(state.timer - count, 'timer')
+			else
+				state:Set(nil, 'timer')
+				state:Set(state.old_status):Set(nil, 'old_status')
 			end
 		end
 	end
 
-	event:Raise('state', { name = name, attribute = attribute, value = value })
-
-	self.states[name][attribute] = value
-	self.timed[name] = nil
-
-	return self.states[name]
-end -- Set()
-
---- Set timed state.
-function SetTimed(self, name, value, count)
-	self:Set(name, value)
-	self:Set(name, count, 'ticks')
-	self.timed[name] = true
-end -- SetTimed()
-
---- Set temporary state.
-function SetTemporary(self, name, value)
-	self:Set(name, value)
-	self.temporary[name] = true
-end -- SetTemporary()
-
---- Get state status.
-function Get(self, name, attribute)
-	attribute = attribute or 'status'
-	return self.states[name] and self.states[name][attribute] or false
-end -- Get()
-
---- Invoke a tick for timed states.
-function Tick(self, count)
-	for name in pairs(self.timed) do
-		self.states[name].ticks = (self.states[name].ticks or 0) - count
-		if self.states[name].ticks <= 0 then
-			self.states[name] = nil
-			self.timed[name] = nil
-		end
-	end
-end -- Tick()
+	return self
+end -- TickTimers()
 
 --- Flush temporary states.
-function Flush(self)
-	for name in pairs(self.temporary) do
-		self.states[name] = nil
-	end
-	self.temporary = {}
-end -- Flush()
-
-
-
--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
--- STATE QUEUE
--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
-
---- Queue state.
--- Add a state and its associated value to the queue, to be added or discarded
--- later on. Queueing a state to a status it was marked to be resetted to makes
--- this also clear all states which were marked for resetting.
-function Queue(self, name, value)
-	local reset = self:Get('reset') or {}
-	for reset_state, reset_value in pairs(reset) do
-		if reset_state == name and reset_value == value then
-			self:Set('reset', {})
-			break
+function FlushTemporaries(self)
+	for _, state in pairs(self.states) do
+		if state.temporary then
+			state:Set(nil, 'temporary')
+			state:Set(state.old_status):Set(nil, 'old_status')
 		end
 	end
 
-	self.queue[name] = value
-end -- Queue
-
---- Remove state from the queue.
-function Dequeue(self, name)
-	self.queue[name] = nil
-end -- Dequeue
+	return self
+end -- FlushTemporaries()
 
 --- Parse the queue.
--- Go through the queue and, if no illusions have been found, change the states
--- to their associated values. Also reset all states still marked by now.
-function Parse(self)
-	if not self:Get('illusion') then
-		local reset = self:Get('reset') or {}
-		for reset_state, reset_value in pairs(reset) do
-			self:Set(reset_state, reset_value)
-		end
+-- Goes through the queue and updates states. If an illusion has been detected
+-- then nothing happens.
+function ParseQueue(self)
+	if self:Get('illusion') then
+		self.queue = {}
+		return;
+	end
 
-		for name, value in pairs(self.queue) do
-			self:Set(name, value)
+	for _, state in pairs(self.states) do
+		if state.queue ~= nil then
+			state:Set(state.queue):Set(nil, 'queue')
 		end
 	end
 
 	self.queue = {}
-end -- Parse()
 
---- Mark states for resetting.
--- Given an input command, finds all states that would be toggled from it and
--- marks them for resetting.
-function Reset(self, input)
-	local reset = self:Get('reset') or {}
+	return self
+end -- ParseQueue()
 
-	for state, state_entry in pairs(self.states) do
+--- Mark states to be reset.
+-- Finds all states that would be toggled by given input and marks them for
+-- resetting.
+function MarkResets(self, input)
+	for _, state in pairs(self.states) do
 		local actions
-		if state_entry.status then
-			actions = state_entry.disable_actions or {}
-		else
-			actions = state_entry.enable_actions or {}
+		if state.type == 'affliction' and state.status then
+			actions = state.disablers or {}
+		elseif state.type == 'defense' and not state.status then
+			actions = state.enablers or {}
 		end
 
 		local match = false
-		for _, action_entry in pairs(actions) do
-			if string.match(action_entry, input) then
+		for _, action in pairs(actions) do
+			if action == input then
 				match = true
+				break
 			end
 		end
 
 		if match then
-			reset[state] = not state_entry.status
+			local reset = state.reset or {}
+			table.insert(reset, input)
+
+			state:Set(reset, 'reset')
 		end
 	end
 
-	self:SetTemporary('reset', reset)
+	return self
 end -- ResetAction()
 
+--- Reset states.
+-- Reset all states marked by Reset().
+function ParseResets(self, input)
+	for _, state in pairs(self.states) do
+		if state.reset then
+			if state.type == 'affliction' and state.status then
+				state:Set(false)
+			elseif state.type == 'defense' and not state.status then
+				state:Set(true)
+			end
+			state:Set(nil, 'reset')
+		end
+	end
 
+	return self
+end -- ResetAction()
 
--- === === === === === === === === === === === === === === === === === === ====
--- GENERALIZED STATES
--- === === === === === === === === === === === === === === === === === === ====
+--- Build list of actions.
+function Actions(self)
+	local actions = {}
+
+	for _, state in pairs(self.states) do
+		local state_actions = {}
+		if state.type == 'affliction' and state.status then
+			state_actions = state.disablers or {}
+		elseif state.type == 'defense' and not state.status then
+			state_actions = state.enablers or {}
+		end
+
+		for _, action in pairs(state_actions) do
+			actions[action] = actions[action] or {}
+			table.insert(actions[action], state.name)
+		end
+	end
+
+	return actions
+end -- Actions()
 
 --- Slow command.
 function GotSlowCommand(self)
@@ -195,72 +287,3 @@ end -- GetSlowCommandHandling()
 function GotCommandFumble(self)
 	return false
 end -- GetCommandFumble()
-
-
-
--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
--- ACTION INTEGRATION
--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ----
-
---- Build list of actions.
-function Actions(self)
-	local actions = {}
-
-	for name, state in pairs(self.states) do
-		local state_actions, state_hinders = {}, {}
-		if (state.status and state.setting == false) or (not state.status and state.setting) then
-			if state.status then
-				state_actions = state.disable_actions or {}
-				state_hinders = state.disable_state_hinders or {}
-			elseif not state.status then
-				state_actions = state.enable_actions or {}
-				state_hinders = state.enable_state_hinders or {}
-			end
-
-			if type(state.status) == 'table' then
-				local list_state_actions = {}
-				for _, action_entry in ipairs(state_actions) do
-					if string.find(action_entry, '%%') then
-						for list_entry in pairs(state.status) do
-							action_entry = string.gsub(action_entry, '%%', list_entry)
-							table.insert(list_state_actions, action_entry)
-						end
-					else
-						table.insert(list_state_actions, action_entry)
-					end
-				end
-				state_actions = list_state_actions
-			end
-
-			local state_hindering = false
-			for _, state_hinder in pairs(state_hinders) do
-				if self:Get(state_hinder) then
-					local state_hinder_resolving = false
-					for _, state_hinder_action in pairs(self.states[state_hinder].disable_actions or {}) do
-						if command:QueueGet(state_hinder_action) then
-							state_hinder_resolving = true
-						end
-					end
-					if not state_hinder_resolving then
-						state_hindering = true
-					end
-				end
-			end
-
-			local state_commands_sent = false
-			for _, state_action in ipairs(state_actions) do
-				if command:Get(state_action) or command:QueueGet(state_action) then
-					state_commands_sent = true
-				end
-			end
-
-			if not state_hindering and not state_commands_sent then
-				for _, state_action in ipairs(state_actions) do
-					table.insert(actions, state_action)
-				end
-			end
-		end
-	end
-
-	return actions
-end -- Actions()
